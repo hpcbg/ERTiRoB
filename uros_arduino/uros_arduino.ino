@@ -58,7 +58,7 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 }
 
 void setup() {
-  set_microros_wifi_transports("A1_FB72", "48575443BDD9E4A3", "192.168.100.35", 8888); 
+  set_microros_wifi_transports("HPC", "asdfpoI123$", "192.168.0.110", 8888); 
 
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, HIGH);
@@ -114,13 +114,13 @@ void setup() {
   imu_msg.header.frame_id.size = strlen("imu_frame");
   imu_msg.header.frame_id.capacity = imu_msg.header.frame_id.size + 1;
 
-  // Setup fixed transform (map -> base_link)
+  // // Setup fixed transform (map -> imu_frame)
   fixed_transform.header.frame_id.data = (char *)"map"; // Fixed frame
   fixed_transform.header.frame_id.size = strlen("map");
   fixed_transform.header.frame_id.capacity = fixed_transform.header.frame_id.size + 1;
 
-  fixed_transform.child_frame_id.data = (char *)"base_link"; // Root frame
-  fixed_transform.child_frame_id.size = strlen("base_link");
+  fixed_transform.child_frame_id.data = (char *)"imu_frame"; // Root frame
+  fixed_transform.child_frame_id.size = strlen("imu_frame");
   fixed_transform.child_frame_id.capacity = fixed_transform.child_frame_id.size + 1;
 
   // Define static transform values (adjust as needed)
@@ -185,5 +185,5 @@ void loop() {
     RCSOFTCHECK(rcl_publish(&buttonB_publisher, &buttonB_msg, NULL));
     RCSOFTCHECK(rcl_publish(&imu_publisher, &imu_msg, NULL));
     RCSOFTCHECK(rcl_publish(&tf_publisher, &tf_msg, NULL));
-    //delay(100);
+    delay(100);
 }
