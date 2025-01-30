@@ -3,6 +3,10 @@ build
 install
 log
 
+# micro-ROS
+src/micro_ros_setup
+src/uros
+
 # VS Code
 .vscode
 
