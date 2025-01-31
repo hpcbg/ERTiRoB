@@ -1,0 +1,5 @@
+int32 recording_id
+---
+bool success
+---
+bool is_authorized

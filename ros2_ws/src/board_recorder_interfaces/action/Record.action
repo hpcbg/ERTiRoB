@@ -1,0 +1,5 @@
+string recording_name
+---
+int32 recording_id
+---
+bool is_busy
