@@ -19,7 +19,7 @@ export default function RosConnect({ reconnect, rosError }) {
       </p>
       {rosError && (
         <p>
-          {rosError} If the ROS bridge server is using self-signed certificate
+          {rosError} If the ROS bridge server is using a self-signed certificate
           you need to accept it by opening https://{getRosBridgeAddress()} in
           your browser to add it as an exception.
         </p>

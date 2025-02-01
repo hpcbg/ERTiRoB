@@ -2,6 +2,10 @@
 
 This a demo React app for communication with the board recorder via ROS 2 WebSocket provided by rosbridge.
 
+The current stable version of the app is deployed at [https://board-recorder.web.app/](https://board-recorder.web.app/).
+
+Please, note that if the ROS bridge server is using a self-signed certificate you need to accept it by opening https://<websocket-address>:<websocket-port> in your browser to add it as an exception.
+
 
 ## Build
 
