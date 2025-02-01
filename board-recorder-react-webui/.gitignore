@@ -2,7 +2,7 @@
 config/config.js
 
 # Firebase
-firebase.json
+# firebase.json
 .firebaserc
 .firebase
 
