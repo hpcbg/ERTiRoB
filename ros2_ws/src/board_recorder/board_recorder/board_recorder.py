@@ -75,7 +75,8 @@ class BoardRecorder(Node):
         result = Record.Result()
         result.recording_id = 0
         if self.is_recording:
-            goal_handle.abort()
+            result.recording_id = self.current_recording_id
+            goal_handle.succeed()
         else:
             self.is_recording = True
             self.current_recording_id = self.next_recording_id
