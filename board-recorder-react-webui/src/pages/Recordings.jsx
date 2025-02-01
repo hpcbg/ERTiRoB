@@ -1,7 +1,5 @@
-import { Outlet, useRouteLoaderData, Form } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-
-import { useDispatch, useSelector } from "react-redux";
 
 import ROSLIB from "roslib";
 
@@ -14,13 +12,12 @@ import RosServices from "../components/ROS/RosServices.jsx";
 import Recording from "../components/Recording/Recording.jsx";
 
 import styles from "./Recordings.module.css";
-import { recordingActions } from "../store/recordings.js";
 
 import { getRosBridgeAddress } from "../query_utils/auth.js";
 
 export default function Recordings() {
   const rosRef = useRef(new ROSLIB.Ros());
-  const ros = new ROSLIB.Ros();
+
   console.log(getRosBridgeAddress());
   rosRef.current.on("error", function (error) {
     console.log("???", error);
@@ -28,7 +25,6 @@ export default function Recordings() {
     setRosStatus("CLOSED");
   });
 
-  // Find out exactly when we made a connection.
   rosRef.current.on("connection", function () {
     console.log("Connected!");
     setRosError("");
@@ -40,26 +36,19 @@ export default function Recordings() {
     setRosStatus("CLOSED");
   });
 
-  const websocket = useRouteLoaderData("root");
-  const dispatch = useDispatch();
-  console.log(websocket);
-
   const [rosStatus, setRosStatus] = useState("CLOSED");
   const [rosError, setRosError] = useState("");
-  // const ros = useSelector((state) => state.ros);
-  // const rosStatus = useSelector((state) => state.rosStatus);
 
   function connect() {
     try {
       setRosError("");
-      rosRef.current.connect("ws://" + getRosBridgeAddress());
+      rosRef.current.connect("wss://" + getRosBridgeAddress());
     } catch (error) {
       setRosError("ERROR: Cannot connect!");
     }
   }
 
   function close() {
-    console.log("aaa");
     try {
       setRosError("");
       setRosStatus("CLOSED");
@@ -67,7 +56,6 @@ export default function Recordings() {
     } catch (error) {}
   }
   useEffect(() => {
-    console.log("aaa2");
     connect();
     return () => close();
   }, []);
@@ -99,8 +87,6 @@ export default function Recordings() {
             </>
           )}
         </div>
-        {/* <HotOffersSection /> */}
-        {/* <FindArticlesSection /> */}
       </main>
     </>
   );

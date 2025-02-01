@@ -34,7 +34,7 @@ export default function IntroPage() {
         <h2>Welcome to the task board recorder!</h2>
         <p>Please set the ROS 2 bridge websocket address of your task board:</p>
         <p>
-          ws://
+          wss://
           <input
             type="text"
             placeholder="localhost:9090"

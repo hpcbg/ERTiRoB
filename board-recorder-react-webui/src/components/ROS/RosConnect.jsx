@@ -7,7 +7,7 @@ export default function RosConnect({ reconnect, rosError }) {
   return (
     <ContentSection header="ROS 2 Connection">
       <p>
-        Websocket is set to ws://{getRosBridgeAddress()}{" "}
+        Websocket is set to wss://{getRosBridgeAddress()}{" "}
         <Button type="link" style="button" to="/intro">
           Edit
         </Button>
@@ -17,7 +17,13 @@ export default function RosConnect({ reconnect, rosError }) {
           Reconnect
         </Button>
       </p>
-      {rosError && <p>{rosError}</p>}
+      {rosError && (
+        <p>
+          {rosError} If the ROS bridge server is using self-signed certificate
+          you need to accept it by opening https://{getRosBridgeAddress()} in
+          your browser to add it as an exception.
+        </p>
+      )}
     </ContentSection>
   );
 }
