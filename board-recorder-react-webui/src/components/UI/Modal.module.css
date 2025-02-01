@@ -1,0 +1,27 @@
+.modal {
+  margin: 0 auto;
+  padding: 2rem;
+  position: fixed;
+  left: 0;
+  top: 1em;
+  max-width: 100%;
+  width: 30rem;
+  max-height: 80vh;
+  background: #e2e5eb;
+  border: none;
+  border-radius: 6px;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.modal::backdrop {
+  height: 100vh;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+}

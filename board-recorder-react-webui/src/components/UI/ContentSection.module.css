@@ -1,0 +1,11 @@
+.section {
+  margin: 0;
+  padding: 0 10%;
+}
+
+.section > h2 {
+  font-size: 2rem;
+  font-family: "Quicksand", sans-serif;
+  margin: 2rem auto;
+  color: #097ccf;
+}
