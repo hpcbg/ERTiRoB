@@ -1,3 +1,4 @@
+sudo apt install ros-jazzy-rosbridge-suite
 mkdir src/micro_ros_setup
 cd src/micro_ros_setup
 git clone -b jazzy https://github.com/micro-ROS/micro_ros_setup.git
