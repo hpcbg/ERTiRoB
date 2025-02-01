@@ -5,7 +5,7 @@ import rclpy
 from rclpy.action import ActionServer
 from rclpy.node import Node
 
-from board_recorder_interfaces.srv import FetchRecording
+from board_recorder_interfaces.srv import FetchRecording, FetchSensorNames, FetchSensorData
 from board_recorder_interfaces.action import Record, Stop
 
 
@@ -43,6 +43,24 @@ class BoardRecorder(Node):
         response.recording_json = json.dumps(recording)
 
         self.get_logger().info(f'Fetch request for recording id {id}')
+
+        return response
+
+    def fetch_sensor_names_callback(self, _, response):
+        response.sensor_names_json = json.dumps(list(self.subs.keys()))
+        self.get_logger().info(f'Fetch request for the sensor names')
+
+        return response
+
+    def fetch_sensor_data_callback(self, request, response):
+        if request.sensor_name in self.subs:
+            response.data_json = json.dumps(
+                {'data': self.subs[request.sensor_name]['value']})
+        else:
+            response.data_json = ""
+
+        self.get_logger().info(
+            f'Fetch request for the sensor data of {request.sensor_name}')
 
         return response
 
@@ -157,6 +175,12 @@ class BoardRecorder(Node):
     def init_services(self):
         self._fetch_recording_srv = self.create_service(
             FetchRecording, 'fetch_recording', self.fetch_recording_callback)
+
+        self._fetch_sensor_names_srv = self.create_service(
+            FetchSensorNames, 'fetch_sensor_names', self.fetch_sensor_names_callback)
+
+        self._fetch_sensor_data_srv = self.create_service(
+            FetchSensorData, 'fetch_sensor_data', self.fetch_sensor_data_callback)
 
 
 def main(args=None):

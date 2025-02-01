@@ -58,5 +58,15 @@ ros2 action send_goal --feedback stop board_recorder_interfaces/action/Stop "{re
 
 7. Fetch recorded data
 ```
-ros2 service call /fetch_recording board_recorder_interfaces/srv/FetchRecording "{recording_id: 1}"
+ros2 service call fetch_recording board_recorder_interfaces/srv/FetchRecording "{recording_id: 1}"
+```
+
+8. Fetch all sensors names
+```
+ros2 service call /fetch_sensor_names board_recorder_interfaces/srv/FetchSensorNames "{}"
+```
+
+9. Fetch sensor data
+```
+ros2 service call /fetch_sensor_data board_recorder_interfaces/srv/FetchSensorData "{sensor_name: 'voltage'}"
 ```
