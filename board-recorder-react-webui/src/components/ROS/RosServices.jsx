@@ -48,7 +48,7 @@ export default function RosServices({ rosRef }) {
     });
 
     service.callService(
-      { count: 5 },
+      { count: 10 },
       (response) => {
         setLatestRecordings(JSON.parse(response.recordings_list_json));
         console.log(response);
@@ -178,7 +178,7 @@ export default function RosServices({ rosRef }) {
       <hr />
       <p>
         <Button type="button" style="button" onClick={fetchLatestRecordings}>
-          Reload Latest 5 Recordings
+          Reload Last 10 Recordings
         </Button>{" "}
         <select onChange={(e) => setRecordingId(e.target.value)}>
           {latestRecordings.length == 0 ? (
@@ -186,8 +186,8 @@ export default function RosServices({ rosRef }) {
           ) : (
             <>
               <option value={0}>Select recording</option>
-              {latestRecordings.map((recording, i) => (
-                <option key={i} value={recording.id}>
+              {latestRecordings.map((recording) => (
+                <option key={recording.id} value={recording.id}>
                   {recording.id} from{" "}
                   {formatUnixTimestamp(recording.start_time)}
                 </option>
