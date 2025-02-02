@@ -5,12 +5,14 @@ import ROSLIB from "roslib";
 
 import Button from "../UI/Button";
 import { recordingActions } from "../../recordings/recordings";
+import { formatUnixTimestamp } from "../../utils/formatters";
 
 export default function RosServices({ rosRef }) {
   const [recordingId, setRecordingId] = useState(1);
   const [sensorNames, setSensorNames] = useState([]);
   const [sensorName, setSensorName] = useState("");
   const [sensorData, setSensorData] = useState("");
+  const [latestRecordings, setLatestRecordings] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -30,6 +32,26 @@ export default function RosServices({ rosRef }) {
             data: JSON.parse(response.recording_json),
           })
         );
+        console.log(response);
+      },
+      function (error) {
+        console.log(error);
+      }
+    );
+  }
+
+  function fetchLatestRecordings() {
+    const service = new ROSLIB.Service({
+      ros: rosRef.current,
+      name: "fetch_latest_recordings",
+      serviceType: "board_recorder_interfaces/srv/FetchLatestRecordings",
+    });
+
+    service.callService(
+      { count: 5 },
+
+      function (response) {
+        setLatestRecordings(JSON.parse(response.recordings_list_json));
         console.log(response);
       },
       function (error) {
@@ -93,10 +115,10 @@ export default function RosServices({ rosRef }) {
         </Button>{" "}
         <select onChange={(e) => fetchSensorData(e.target.value)}>
           {sensorNames.length == 0 ? (
-            <option>Please load sensors</option>
+            <option>Press load button</option>
           ) : (
             <>
-              <option>Select Sensor</option>
+              <option>Select sensor</option>
               {sensorNames.map((sensorName, i) => (
                 <option key={i}>{sensorName}</option>
               ))}
@@ -117,7 +139,27 @@ export default function RosServices({ rosRef }) {
         )}
       </p>
       <p>
-        Recording id:
+        <Button type="button" style="button" onClick={fetchLatestRecordings}>
+          Load Latest 5 Recordings
+        </Button>{" "}
+        <select onChange={(e) => setRecordingId(e.target.value)}>
+          {latestRecordings.length == 0 ? (
+            <option value={0}>Press load button</option>
+          ) : (
+            <>
+              <option value={0}>Select recording</option>
+              {latestRecordings.map((recording, i) => (
+                <option key={i} value={recording.id}>
+                  {recording.id} from{" "}
+                  {formatUnixTimestamp(recording.start_time)}
+                </option>
+              ))}
+            </>
+          )}
+        </select>
+      </p>
+      <p>
+        Recording id:{" "}
         <input
           type="text"
           placeholder="1"
