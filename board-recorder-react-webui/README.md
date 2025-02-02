@@ -26,7 +26,7 @@ This project uses React + Vite. This template provides a minimal setup to get Re
 
 React Router is used for the client-side routing of the application.
 
-The application implements state functionality with the use of Redux Toolkit which is used for store setup, creating reducers and immutable update logic. Redux also reduces the written code by giving the unique option to write "mutative" immutable update logic.
+The application implements state functionality with the use of Redux Toolkit which is used for recordings setup, creating reducers and immutable update logic. Redux also reduces the written code by giving the unique option to write "mutative" immutable update logic.
 
 Framer Motion is used as an animation library. It is a production-ready library for React. One of its advantages over the regular CSS animation is the ability to easily set animation on the element disappearance.
 

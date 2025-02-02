@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import ROSLIB from "roslib";
 
 import Button from "../UI/Button";
-import { recordingActions } from "../../store/recordings";
+import { recordingActions } from "../../recordings/recordings";
 
 export default function RosServices({ rosRef }) {
   const [recordingId, setRecordingId] = useState(1);
@@ -25,13 +25,9 @@ export default function RosServices({ rosRef }) {
       { recording_id: parseInt(recordingId) },
 
       function (response) {
-        let json = JSON.parse(response.recording_json);
-        let data = json.data || {};
-        data.status = json.status;
-        data.id = json.recording_id;
         dispatch(
           recordingActions.setData({
-            data,
+            data: JSON.parse(response.recording_json),
           })
         );
         console.log(response);

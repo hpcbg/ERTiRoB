@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import ROSLIB from "roslib";
 
 import Button from "../UI/Button";
-import { recordingActions } from "../../store/recordings";
+import { recordingActions } from "../../recordings/recordings";
 
 export default function RosActions({ rosRef }) {
   const isRecording = useSelector((state) => state.recordings.isRecording);

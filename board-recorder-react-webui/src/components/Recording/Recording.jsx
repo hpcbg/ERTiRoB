@@ -10,6 +10,7 @@ export default function Recording() {
       {recording && (
         <div>
           <p>Recording id: {recording.id}</p>
+          <p>Recording name: {recording.name}</p>
           <p>Recording status: {recording.status}</p>
           {recording.status != "Not Found" && (
             <RecordingEvents>{recording.events}</RecordingEvents>
