@@ -19,6 +19,31 @@ export default function RosServices({ rosRef }) {
 
   const dispatch = useDispatch();
 
+  function fetchCurrentRecordingId() {
+    const service = new ROSLIB.Service({
+      ros: rosRef.current,
+      name: "fetch_current_recording_id",
+      serviceType: "board_recorder_interfaces/srv/FetchCurrentRecordingId",
+    });
+
+    service.callService(
+      {},
+      (response) => {
+        if (response.recording_id >= 0) {
+          dispatch(
+            recordingActions.record({
+              recording_id: response.recording_id,
+            })
+          );
+        } else {
+          dispatch(recordingActions.stop());
+        }
+        console.log(response);
+      },
+      (error) => console.log(error)
+    );
+  }
+
   function fetchRecording() {
     const service = new ROSLIB.Service({
       ros: rosRef.current,
@@ -129,8 +154,15 @@ export default function RosServices({ rosRef }) {
   useEffect(() => {
     fetchSensorNames();
     fetchLatestRecordings();
+    fetchCurrentRecordingId();
+    const fetchCurrentRecordingIdInterval = setInterval(
+      fetchCurrentRecordingId,
+      10000
+    );
 
-    return () => {};
+    return () => {
+      clearInterval(fetchCurrentRecordingIdInterval);
+    };
   }, []);
 
   useEffect(() => {
