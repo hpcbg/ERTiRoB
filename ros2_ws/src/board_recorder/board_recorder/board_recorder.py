@@ -77,9 +77,11 @@ class BoardRecorder(Node):
                 event = events.fetchone()
         else:
             recording = {
-                'recording_id': id,
+                'id': id,
+                'name': 'unknown',
+                'start_time': 0,
                 'status': 'Not Found',
-                'data': ''
+                'events': []
             }
 
         response.recording_json = json.dumps(recording)
