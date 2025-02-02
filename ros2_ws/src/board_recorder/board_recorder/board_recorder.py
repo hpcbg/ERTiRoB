@@ -1,4 +1,6 @@
+import sqlite3
 import json
+import os.path
 from pydoc import locate
 
 import rclpy
@@ -21,25 +23,44 @@ class BoardRecorder(Node):
                                board_config_descriptor)
 
         self.init_board()
-
         self.init_recordings_db()
-
         self.init_actions()
-
         self.init_services()
 
     def fetch_recording_callback(self, request, response):
         id = request.recording_id
 
-        recording = {
-            'recording_id': id,
-            'status': 'Not Found',
-            'data': ''
-        }
+        cur = self.db_con.cursor()
+        row = cur.execute(
+            f'SELECT * FROM recordings WHERE id = \'{id}\' LIMIT 1')
+        row = row.fetchone()
+        print(row)
+        if row:
+            recording = {
+                'id': id,
+                'name': row[1],
+                'start_time': row[2],
+                'status': row[3],
+                'events': []
+            }
+            events = cur.execute(
+                f'SELECT time, name, data FROM events WHERE recording_id = \'{id}\' ORDER BY time')
+            event = events.fetchone()
+            while event:
+                print(event)
+                recording['events'].append({
+                    'time': event[0],
+                    'name': event[1],
+                    'data': event[2]
+                })
+                event = events.fetchone()
+        else:
+            recording = {
+                'recording_id': id,
+                'status': 'Not Found',
+                'data': ''
+            }
 
-        if id in self.recordings:
-            recording['status'] = self.recordings[id]['status']
-            recording['data'] = self.recordings[id]
         response.recording_json = json.dumps(recording)
 
         self.get_logger().info(f'Fetch request for recording id {id}')
@@ -79,16 +100,13 @@ class BoardRecorder(Node):
             goal_handle.succeed()
         else:
             self.is_recording = True
-            self.current_recording_id = self.next_recording_id
-            self.next_recording_id = self.next_recording_id + 1
+            self.current_recording_start_time = self.get_clock().now().nanoseconds * 1e-9
+            cur = self.db_con.cursor()
+            cur.execute(f'INSERT INTO recordings (name, start_time, status) VALUES (\'{
+                        goal_handle.request.recording_name}\', {self.current_recording_start_time}, \'Recording\')')
+            self.db_con.commit()
+            self.current_recording_id = cur.lastrowid
             result.recording_id = self.current_recording_id
-            self.recordings[self.current_recording_id] = {
-                'id': self.current_recording_id,
-                'name': goal_handle.request.recording_name,
-                'status': 'Recording',
-                'start_time': self.get_clock().now().nanoseconds * 1e-9,
-                'events': []
-            }
             goal_handle.succeed()
         return result
 
@@ -102,9 +120,15 @@ class BoardRecorder(Node):
 
         result = Stop.Result()
         result.success = feedback_msg.is_authorized
-        if result.success:
+        cur = self.db_con.cursor()
+        row = cur.execute(f'SELECT id, status FROM recordings WHERE id = \'{
+                          goal_handle.request.recording_id}\'')
+        row = cur.fetchone()
+        if row:
+            cur.execute(f'UPDATE recordings SET status = \'Completed\' WHERE id = \'{
+                        goal_handle.request.recording_id}\'')
+            self.db_con.commit()
             self.is_recording = False
-            self.recordings[self.current_recording_id]['status'] = 'Completed'
             goal_handle.succeed()
         else:
             goal_handle.abort()
@@ -119,11 +143,10 @@ class BoardRecorder(Node):
                 if self.subs[name]['timeout'] > 0 and self.subs[name]['timeout'] * 1e-3 >= time - self.subs[name]['time']:
                     return
                 if self.is_recording:
-                    self.recordings[self.current_recording_id]['events'].append({
-                        'time': time - self.recordings[self.current_recording_id]['start_time'],
-                        'name': name,
-                        'data': new
-                    })
+                    cur = self.db_con.cursor()
+                    cur.execute(f'INSERT INTO events (recording_id, name, data, time) VALUES ({
+                                self.current_recording_id}, \'{name}\', \'{new}\', {time - self.current_recording_start_time})')
+                    self.db_con.commit()
                 self.get_logger().info(f'{time:.2f}: {name} -> {new}')
                 self.subs[name]['value'] = new
                 self.subs[name]['time'] = time
@@ -155,10 +178,26 @@ class BoardRecorder(Node):
             }
 
     def init_recordings_db(self):
-        self.recordings = {}
-        self.current_recording_id = 0
-        self.next_recording_id = 1
+        DB_FILE = './db/recordings.db'
+        if os.path.isfile(DB_FILE):
+            self.db_con = sqlite3.connect(DB_FILE)
+        else:
+            self.db_con = sqlite3.connect(DB_FILE)
+            cur = self.db_con.cursor()
+            cur.execute(
+                'CREATE TABLE recordings(id         INTEGER PRIMARY KEY AUTOINCREMENT, \
+                                         name       VARCHAR(256), \
+                                         start_time DOUBLE, \
+                                         status     VARCHAR(16))')
+            cur.execute(
+                'CREATE TABLE events(recording_id INTEGER, \
+                                     name TEXT, \
+                                     data TEXT, \
+                                     time DOUBLE)')
+            cur.execute(
+                'CREATE INDEX recording_id_idx ON events(recording_id)')
         self.is_recording = False
+        self.current_recording_id = 0
 
     def init_actions(self):
         self._record_action_server = ActionServer(
