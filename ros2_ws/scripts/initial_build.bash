@@ -1,3 +1,8 @@
+sudo rm -rf install
+sudo rm -rf build
+sudo rm -rf log
+sudo rm -rf src/micro_ros_setup
+source /opt/ros/jazzy/setup.bash
 sudo apt install ros-jazzy-rosbridge-suite
 mkdir src/micro_ros_setup
 cd src/micro_ros_setup

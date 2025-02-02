@@ -8,6 +8,8 @@ The initial install requires execution of the script `./scripts/initial_build.ba
 
 ## Launch
 
-After the initial build the packages can be launched in different configurations. The launch directory contains various launch configurations.
+Execute `.scripts/run_ros.bash` from the `ros2_ws` folder.
+
+Packages can be launched in different configurations. The launch directory contains various launch configurations.
 
 The complete configuration which also includes Rosbridge WebSocket server can be started with the following command `ros2 launch ./launch/complete_launch.py`
