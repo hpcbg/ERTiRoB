@@ -7,7 +7,7 @@ import rclpy
 from rclpy.action import ActionServer
 from rclpy.node import Node
 
-from board_recorder_interfaces.srv import FetchRecording, FetchLatestRecordings, FetchRecordingEvents, FetchSensorNames, FetchSensorData
+from board_recorder_interfaces.srv import FetchCurrentRecordingId, FetchRecording, FetchLatestRecordings, FetchRecordingEvents, FetchSensorNames, FetchSensorData
 from board_recorder_interfaces.action import Record, Stop
 
 
@@ -108,6 +108,13 @@ class BoardRecorder(Node):
 
         self.get_logger().info(
             f'Fetch request for events from recording with id {request.recording_id} from time {request.from_time}')
+
+        return response
+
+    def fetch_current_recording_id_callback(self, _, response):
+        response.recording_id = self.current_recording_id if self.is_recording else -1
+
+        self.get_logger().info(f'Fetch request for current recording id')
 
         return response
 
@@ -257,6 +264,9 @@ class BoardRecorder(Node):
             self.execute_stop_callback)
 
     def init_services(self):
+        self._fetch_current_recording_id_srv = self.create_service(
+            FetchCurrentRecordingId, 'fetch_current_recording_id', self.fetch_current_recording_id_callback)
+
         self._fetch_latest_recordings_srv = self.create_service(
             FetchLatestRecordings, 'fetch_latest_recordings', self.fetch_latest_recordings_callback)
 

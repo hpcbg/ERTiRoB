@@ -80,3 +80,8 @@ ros2 service call fetch_latest_recordings board_recorder_interfaces/srv/FetchLat
 ```
 ros2 service call fetch_recording_events board_recorder_interfaces/srv/FetchRecordingEvents "{recording_id: 1, from_time: 0}"
 ```
+
+12. Fetch current recording id (returns -1 if not recording)
+```
+ros2 service call fetch_current_recording_id board_recorder_interfaces/srv/FetchCurrentRecordingId "{}"
+```
