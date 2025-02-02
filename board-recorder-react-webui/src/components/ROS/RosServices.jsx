@@ -83,10 +83,11 @@ export default function RosServices({ rosRef }) {
   }
 
   function fetchNewRecordingEvents() {
-    if (!recording || !("events" in recording) || recording.events.length == 0)
-      return;
+    if (!recording || !("events" in recording)) return;
 
-    let time = recording.events[recording.events.length - 1].time + 0.01;
+    let time = 0;
+    if (recording.events.length > 0)
+      time = recording.events[recording.events.length - 1].time + 0.01;
 
     const service = new ROSLIB.Service({
       ros: rosRef.current,
