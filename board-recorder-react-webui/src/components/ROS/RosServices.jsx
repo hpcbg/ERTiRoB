@@ -25,8 +25,7 @@ export default function RosServices({ rosRef }) {
 
     service.callService(
       { recording_id: parseInt(recordingId) },
-
-      function (response) {
+      (response) => {
         dispatch(
           recordingActions.setData({
             data: JSON.parse(response.recording_json),
@@ -34,9 +33,7 @@ export default function RosServices({ rosRef }) {
         );
         console.log(response);
       },
-      function (error) {
-        console.log(error);
-      }
+      (error) => console.log(error)
     );
   }
 
@@ -49,14 +46,11 @@ export default function RosServices({ rosRef }) {
 
     service.callService(
       { count: 5 },
-
-      function (response) {
+      (response) => {
         setLatestRecordings(JSON.parse(response.recordings_list_json));
         console.log(response);
       },
-      function (error) {
-        console.log(error);
-      }
+      (error) => console.log(error)
     );
   }
 
@@ -69,15 +63,13 @@ export default function RosServices({ rosRef }) {
 
     service.callService(
       {},
-      function (response) {
+      (response) => {
         console.log(response.sensor_names_json);
         let json = JSON.parse(response.sensor_names_json);
         setSensorNames(json);
         console.log(response);
       },
-      function (error) {
-        console.log(error);
-      }
+      (error) => console.log(error)
     );
   }
 
@@ -90,7 +82,7 @@ export default function RosServices({ rosRef }) {
 
     service.callService(
       { sensor_name: sensorName },
-      function (response) {
+      (response) => {
         if (response.data_json == "") {
           setSensorData("");
           setSensorName("");
@@ -101,9 +93,7 @@ export default function RosServices({ rosRef }) {
         }
         console.log(response);
       },
-      function (error) {
-        console.log(error);
-      }
+      (error) => console.log(error)
     );
   }
 
