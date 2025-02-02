@@ -82,7 +82,9 @@ export default function Recordings() {
           {rosStatus == "OK" && (
             <>
               <RosActions rosRef={rosRef}></RosActions>
+              <hr />
               <RosServices rosRef={rosRef}></RosServices>
+              <hr />
               <Recording></Recording>
             </>
           )}

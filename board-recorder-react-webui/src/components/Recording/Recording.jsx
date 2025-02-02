@@ -11,9 +11,11 @@ export default function Recording() {
     <>
       {recording && (
         <div>
+          <p>
+            <strong>Recording Details</strong>
+          </p>
           <p>Recording id: {recording.id}</p>
           <p>Recording time: {formatUnixTimestamp(recording.start_time)}</p>
-
           <p>Recording name: {recording.name}</p>
           <p>Recording status: {recording.status}</p>
           {recording.status != "Not Found" && (

@@ -128,6 +128,7 @@ export default function RosServices({ rosRef }) {
           </>
         )}
       </p>
+      <hr />
       <p>
         <Button type="button" style="button" onClick={fetchLatestRecordings}>
           Load Latest 5 Recordings
