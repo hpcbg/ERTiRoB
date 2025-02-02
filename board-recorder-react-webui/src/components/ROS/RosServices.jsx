@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import ROSLIB from "roslib";
 
@@ -13,6 +13,9 @@ export default function RosServices({ rosRef }) {
   const [sensorName, setSensorName] = useState("");
   const [sensorData, setSensorData] = useState("");
   const [latestRecordings, setLatestRecordings] = useState([]);
+  const [autoUpdateChecked, setAutoUpdateChecked] = useState(false);
+
+  const recording = useSelector((state) => state.recordings.data);
 
   const dispatch = useDispatch();
 
@@ -54,6 +57,33 @@ export default function RosServices({ rosRef }) {
     );
   }
 
+  function fetchNewRecordingEvents() {
+    if (!recording || !("events" in recording) || recording.events.length == 0)
+      return;
+
+    let time = recording.events[recording.events.length - 1].time + 0.01;
+
+    const service = new ROSLIB.Service({
+      ros: rosRef.current,
+      name: "fetch_recording_events",
+      serviceType: "board_recorder_interfaces/srv/FetchRecordingEvents",
+    });
+
+    service.callService(
+      { recording_id: recording.id, from_time: time },
+      (response) => {
+        dispatch(
+          recordingActions.addNewEventsData({
+            recording_id: recording.id,
+            events: JSON.parse(response.events_json),
+          })
+        );
+        console.log(response);
+      },
+      (error) => console.log(error)
+    );
+  }
+
   function fetchSensorNames() {
     const service = new ROSLIB.Service({
       ros: rosRef.current,
@@ -64,7 +94,6 @@ export default function RosServices({ rosRef }) {
     service.callService(
       {},
       (response) => {
-        console.log(response.sensor_names_json);
         let json = JSON.parse(response.sensor_names_json);
         setSensorNames(json);
         console.log(response);
@@ -97,12 +126,29 @@ export default function RosServices({ rosRef }) {
     );
   }
 
+  useEffect(() => {
+    fetchSensorNames();
+    fetchLatestRecordings();
+
+    return () => {};
+  }, []);
+
+  useEffect(() => {
+    let autoUpdateInterval = null;
+    if (autoUpdateChecked) {
+      autoUpdateInterval = setInterval(fetchNewRecordingEvents, 10000);
+    }
+
+    return () => {
+      if (autoUpdateInterval) {
+        clearInterval(autoUpdateInterval);
+      }
+    };
+  }, [autoUpdateChecked, recording]);
+
   return (
     <div>
       <p>
-        <Button type="button" style="button" onClick={fetchSensorNames}>
-          Load Sensors
-        </Button>{" "}
         <select onChange={(e) => fetchSensorData(e.target.value)}>
           {sensorNames.length == 0 ? (
             <option>Press load button</option>
@@ -115,9 +161,10 @@ export default function RosServices({ rosRef }) {
             </>
           )}
         </select>{" "}
+        current value:{" "}
         {sensorName && (
           <>
-            Sensor value: {sensorData}{" "}
+            {sensorData}{" "}
             <Button
               type="button"
               style="button"
@@ -131,7 +178,7 @@ export default function RosServices({ rosRef }) {
       <hr />
       <p>
         <Button type="button" style="button" onClick={fetchLatestRecordings}>
-          Load Latest 5 Recordings
+          Reload Latest 5 Recordings
         </Button>{" "}
         <select onChange={(e) => setRecordingId(e.target.value)}>
           {latestRecordings.length == 0 ? (
@@ -161,6 +208,15 @@ export default function RosServices({ rosRef }) {
         <Button type="button" style="button" onClick={fetchRecording}>
           Load Recording
         </Button>
+        <label>
+          <input
+            type="checkbox"
+            name="autoUpdate"
+            checked={autoUpdateChecked}
+            onChange={(e) => setAutoUpdateChecked(!autoUpdateChecked)}
+          />{" "}
+          Auto update
+        </label>
       </p>
     </div>
   );

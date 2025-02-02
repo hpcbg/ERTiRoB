@@ -27,6 +27,15 @@ const recordingsSlice = createSlice({
     setData(state, action) {
       state.data = action.payload.data;
     },
+    addNewEventsData(state, action) {
+      if (
+        !state.data ||
+        state.data.recording_id != action.payload.id ||
+        action.payload.events.length == 0
+      )
+        return;
+      state.data.events = state.data.events.concat(action.payload.events);
+    },
   },
 });
 
