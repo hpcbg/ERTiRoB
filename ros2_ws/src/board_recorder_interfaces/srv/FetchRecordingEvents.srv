@@ -1,0 +1,4 @@
+int32 recording_id
+float32 from_time
+---
+string events_json

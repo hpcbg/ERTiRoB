@@ -7,7 +7,7 @@ import rclpy
 from rclpy.action import ActionServer
 from rclpy.node import Node
 
-from board_recorder_interfaces.srv import FetchRecording, FetchLatestRecordings, FetchSensorNames, FetchSensorData
+from board_recorder_interfaces.srv import FetchRecording, FetchLatestRecordings, FetchRecordingEvents, FetchSensorNames, FetchSensorData
 from board_recorder_interfaces.action import Record, Stop
 
 
@@ -26,44 +26,6 @@ class BoardRecorder(Node):
         self.init_recordings_db()
         self.init_actions()
         self.init_services()
-
-    def fetch_recording_callback(self, request, response):
-        id = request.recording_id
-
-        cur = self.db_con.cursor()
-        row = cur.execute(
-            f'SELECT * FROM recordings WHERE id = \'{id}\' LIMIT 1')
-        row = row.fetchone()
-        if row:
-            recording = {
-                'id': id,
-                'name': row[1],
-                'start_time': row[2],
-                'status': row[3],
-                'events': []
-            }
-            events = cur.execute(
-                f'SELECT time, name, data FROM events WHERE recording_id = \'{id}\' ORDER BY time')
-            event = events.fetchone()
-            while event:
-                recording['events'].append({
-                    'time': event[0],
-                    'name': event[1],
-                    'data': event[2]
-                })
-                event = events.fetchone()
-        else:
-            recording = {
-                'recording_id': id,
-                'status': 'Not Found',
-                'data': ''
-            }
-
-        response.recording_json = json.dumps(recording)
-
-        self.get_logger().info(f'Fetch request for recording id {id}')
-
-        return response
 
     def fetch_latest_recordings_callback(self, request, response):
         count = request.count
@@ -85,6 +47,65 @@ class BoardRecorder(Node):
 
         self.get_logger().info(
             f'Fetch request for latest recordings with count {count}')
+
+        return response
+
+    def fetch_recording_callback(self, request, response):
+        id = request.recording_id
+
+        cur = self.db_con.cursor()
+        row = cur.execute(
+            f'SELECT * FROM recordings WHERE id = \'{id}\' LIMIT 1')
+        row = row.fetchone()
+        if row:
+            recording = {
+                'id': id,
+                'name': row[1],
+                'start_time': row[2],
+                'status': row[3],
+                'events': []
+            }
+            events = cur.execute(
+                f'SELECT time, name, data FROM events WHERE recording_id = \'{id}\' ORDER BY time ASC')
+            event = events.fetchone()
+            while event:
+                recording['events'].append({
+                    'time': event[0],
+                    'name': event[1],
+                    'data': event[2]
+                })
+                event = events.fetchone()
+        else:
+            recording = {
+                'recording_id': id,
+                'status': 'Not Found',
+                'data': ''
+            }
+
+        response.recording_json = json.dumps(recording)
+
+        self.get_logger().info(f'Fetch request for recording id {id}')
+
+        return response
+
+    def fetch_recording_events_callback(self, request, response):
+        events = []
+        cur = self.db_con.cursor()
+        rows = cur.execute(
+            f'SELECT time, name, data FROM events WHERE recording_id = {request.recording_id} AND time >= {request.from_time} ORDER BY time ASC')
+        row = rows.fetchone()
+        while row:
+            events.append({
+                'time': row[0],
+                'name': row[1],
+                'data': row[2]
+            })
+            row = rows.fetchone()
+
+        response.events_json = json.dumps(events)
+
+        self.get_logger().info(
+            f'Fetch request for events from recording with id {request.recording_id} from time {request.from_time}')
 
         return response
 
@@ -234,11 +255,14 @@ class BoardRecorder(Node):
             self.execute_stop_callback)
 
     def init_services(self):
+        self._fetch_latest_recordings_srv = self.create_service(
+            FetchLatestRecordings, 'fetch_latest_recordings', self.fetch_latest_recordings_callback)
+
         self._fetch_recording_srv = self.create_service(
             FetchRecording, 'fetch_recording', self.fetch_recording_callback)
 
-        self._fetch_latest_recordings_srv = self.create_service(
-            FetchLatestRecordings, 'fetch_latest_recordings', self.fetch_latest_recordings_callback)
+        self._fetch_recording_events_srv = self.create_service(
+            FetchRecordingEvents, 'fetch_recording_events', self.fetch_recording_events_callback)
 
         self._fetch_sensor_names_srv = self.create_service(
             FetchSensorNames, 'fetch_sensor_names', self.fetch_sensor_names_callback)

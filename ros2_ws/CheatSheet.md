@@ -75,3 +75,8 @@ ros2 service call fetch_sensor_data board_recorder_interfaces/srv/FetchSensorDat
 ```
 ros2 service call fetch_latest_recordings board_recorder_interfaces/srv/FetchLatestRecordings "{count: 10}"
 ```
+
+11. Fetch recording events for the given recording id and from the given time (time interval is inclusive)
+```
+ros2 service call fetch_recording_events board_recorder_interfaces/srv/FetchRecordingEvents "{recording_id: 1, from_time: 0}"
+```
