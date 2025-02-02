@@ -7,7 +7,7 @@ import rclpy
 from rclpy.action import ActionServer
 from rclpy.node import Node
 
-from board_recorder_interfaces.srv import FetchRecording, FetchSensorNames, FetchSensorData
+from board_recorder_interfaces.srv import FetchRecording, FetchLatestRecordings, FetchSensorNames, FetchSensorData
 from board_recorder_interfaces.action import Record, Stop
 
 
@@ -34,7 +34,6 @@ class BoardRecorder(Node):
         row = cur.execute(
             f'SELECT * FROM recordings WHERE id = \'{id}\' LIMIT 1')
         row = row.fetchone()
-        print(row)
         if row:
             recording = {
                 'id': id,
@@ -47,7 +46,6 @@ class BoardRecorder(Node):
                 f'SELECT time, name, data FROM events WHERE recording_id = \'{id}\' ORDER BY time')
             event = events.fetchone()
             while event:
-                print(event)
                 recording['events'].append({
                     'time': event[0],
                     'name': event[1],
@@ -64,6 +62,29 @@ class BoardRecorder(Node):
         response.recording_json = json.dumps(recording)
 
         self.get_logger().info(f'Fetch request for recording id {id}')
+
+        return response
+
+    def fetch_latest_recordings_callback(self, request, response):
+        count = request.count
+        recordings = []
+        cur = self.db_con.cursor()
+        rows = cur.execute(
+            f'SELECT * FROM recordings ORDER BY start_time DESC{'' if count == 0 else f' LIMIT {count}'}')
+        row = rows.fetchone()
+        while row:
+            recordings.append({
+                'id': row[0],
+                'name': row[1],
+                'start_time': row[2],
+                'status': row[3]
+            })
+            row = rows.fetchone()
+
+        response.recordings_list_json = json.dumps(recordings)
+
+        self.get_logger().info(
+            f'Fetch request for latest recordings with count {count}')
 
         return response
 
@@ -215,6 +236,9 @@ class BoardRecorder(Node):
     def init_services(self):
         self._fetch_recording_srv = self.create_service(
             FetchRecording, 'fetch_recording', self.fetch_recording_callback)
+
+        self._fetch_latest_recordings_srv = self.create_service(
+            FetchLatestRecordings, 'fetch_latest_recordings', self.fetch_latest_recordings_callback)
 
         self._fetch_sensor_names_srv = self.create_service(
             FetchSensorNames, 'fetch_sensor_names', self.fetch_sensor_names_callback)

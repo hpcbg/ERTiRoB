@@ -63,10 +63,15 @@ ros2 service call fetch_recording board_recorder_interfaces/srv/FetchRecording "
 
 8. Fetch all sensors names
 ```
-ros2 service call /fetch_sensor_names board_recorder_interfaces/srv/FetchSensorNames "{}"
+ros2 service call fetch_sensor_names board_recorder_interfaces/srv/FetchSensorNames "{}"
 ```
 
 9. Fetch sensor data
 ```
-ros2 service call /fetch_sensor_data board_recorder_interfaces/srv/FetchSensorData "{sensor_name: 'voltage'}"
+ros2 service call fetch_sensor_data board_recorder_interfaces/srv/FetchSensorData "{sensor_name: 'voltage'}"
+```
+
+10. Fetch latest recordings. If count is 0 the service will return all recordings
+```
+ros2 service call fetch_latest_recordings board_recorder_interfaces/srv/FetchLatestRecordings "{count: 10}"
 ```
