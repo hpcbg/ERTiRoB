@@ -2,6 +2,8 @@
 build
 install
 log
+db/*
+!db/.gitkeep
 
 # micro-ROS
 src/micro_ros_setup

@@ -29,6 +29,11 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "action/Record.action"
   "action/Stop.action"
   "srv/FetchRecording.srv"
+  "srv/FetchSensorData.srv"
+  "srv/FetchSensorNames.srv"
+  "srv/FetchLatestRecordings.srv"
+  "srv/FetchRecordingEvents.srv"
+  "srv/FetchCurrentRecordingId.srv"
 )
 
 ament_package()
