@@ -1,0 +1,43 @@
+.contentSection {
+  margin: 0;
+  padding: 8rem 15%;
+  color: #222c31;
+  text-align: center;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.contentSection div {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 1rem;
+  border-radius: 15px;
+}
+
+.contentSection h2 {
+  font-size: 2.5rem;
+  margin: 2rem auto;
+  color: #1d161a;
+}
+
+.contentSection h2 strong {
+  color: #097ccf;
+}
+
+.contentSection p {
+  font-size: 1.5rem;
+  line-height: 1.5;
+  font-family: "Quicksand", sans-serif;
+  /* text-shadow: 0 2px 2px rgba(0, 0, 0, 0.26); */
+}
+
+.contentSection a,
+a:hover,
+a:active {
+  color: #097ccf;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.contentSection a:hover {
+  text-decoration: underline;
+}

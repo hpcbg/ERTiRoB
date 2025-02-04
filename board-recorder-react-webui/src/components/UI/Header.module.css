@@ -1,0 +1,43 @@
+.header {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+  margin: 0;
+  padding: 2rem 10%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.loading {
+  height: 2rem;
+  margin-bottom: -2rem;
+  text-align: center;
+  accent-color: #097ccf;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.title img {
+  margin-left: 1rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.title h1 {
+  font-size: 1.5rem;
+  color: #0941cf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  cursor: pointer;
+}
+
+.header nav {
+  display: flex;
+  gap: 1rem;
+}

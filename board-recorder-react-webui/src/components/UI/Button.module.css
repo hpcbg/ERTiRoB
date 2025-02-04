@@ -1,0 +1,37 @@
+.button {
+  font: inherit;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  border: none;
+  background-color: #097ccf;
+  color: #fff !important;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.26);
+  font-weight: bold;
+  text-decoration: none;
+  text-align: center;
+}
+
+.button:hover {
+  background-color: #0941cf;
+  color: #fff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  text-decoration: none !important;
+}
+
+.text {
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  border: none;
+  color: #1d161a;
+  border-radius: 4px;
+  font-weight: bold;
+  text-decoration: none;
+  text-align: center;
+}
+
+.text:hover {
+  color: #0941cf !important;
+}

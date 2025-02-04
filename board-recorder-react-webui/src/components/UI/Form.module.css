@@ -1,0 +1,25 @@
+.form label {
+  display: block;
+  font-weight: bold;
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+  color: #3c4249;
+  text-transform: uppercase;
+}
+
+.form input,
+.form textarea {
+  font: inherit;
+  font-size: 1.1rem;
+  padding: 0.25rem;
+  border-radius: 4px;
+  border: 1px solid #097ccf;
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 2rem;
+}
