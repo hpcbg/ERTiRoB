@@ -10,15 +10,11 @@
 #include <sensor_msgs/msg/imu.h>
 #include <tf2_msgs/msg/tf_message.h>
 #include <geometry_msgs/msg/transform_stamped.h>
-
-
-//#include <std_msgs/msg/string.h>
-
-#if !defined(ESP32) && !defined(TARGET_PORTENTA_H7_M7) && !defined(ARDUINO_NANO_RP2040_CONNECT) && !defined(ARDUINO_WIO_TERMINAL)
-#error This example is only avaible for Arduino Portenta, Arduino Nano RP2040 Connect, ESP32 Dev module and Wio Terminal
-#endif
-
 #include <M5StickCPlus2.h>
+
+#include "network_setup.h"
+NetworkManager nm;
+
 
 rcl_publisher_t battery_publisher;
 rcl_publisher_t buttonA_publisher;
@@ -64,14 +60,7 @@ void timer_callback(rcl_timer_t *timer, int64_t last_call_time) {
   RCLC_UNUSED(timer);
 }
 
-void setup() {
-  set_microros_wifi_transports("HPC", "asdfpoI123$", "192.168.0.110", 8888);
-
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, HIGH);
-
-  delay(2000);
-
+void ros_subscribe() {
   allocator = rcl_get_default_allocator();
 
   //create init_options
@@ -159,7 +148,7 @@ double theta = 0, last_theta = 0;
 double phi = 0, last_phi = 0;
 double alpha = 0.2;
 
-void loop() {
+void ros_publish() {
   StickCP2.update();
   StickCP2.Display.clear();
   auto imu_update = StickCP2.Imu.update();
@@ -219,3 +208,40 @@ void loop() {
   RCSOFTCHECK(rcl_publish(&tf_publisher, &tf_msg, NULL));
   delay(100);
 }
+
+
+void loop() { 
+  ros_publish();
+
+}
+
+void setup() {  
+  Serial.begin(115200);
+  delay(300);  // Allow Serial to initialize
+
+  Serial.println("Starting ...\n\n");
+
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, HIGH);
+
+  nm.setup();
+
+  Serial.println("[WiFi SSID]: " + nm.getWifiSSID());
+  Serial.println("[ROS Host]: " + nm.getRosHost());
+  Serial.println("[ROS Port]: " + String(nm.getRosPort()));
+
+  if(StickCP2.BtnB.isPressed()) {
+    StickCP2.Speaker.tone(8000, 20);
+    Serial.println("Reseting network settings!");
+    nm.resetConfig();
+    delay(3000);
+  }
+
+  set_microros_wifi_transports(const_cast<char*>(nm.getWifiSSID().c_str()), 
+                      const_cast<char*>(nm.getWifiPassword().c_str()), 
+                      const_cast<char*>(nm.getRosHost().c_str()), 
+                      nm.getRosPort());
+
+  ros_subscribe();
+}
+
