@@ -202,15 +202,14 @@ void ros_publish() {
 }
 
 
-void loop() { 
+void loop() {
   ros_publish();
-
 }
 
-void setup() {  
+void setup() {
   Serial.begin(115200);
   delay(300);  // Allow Serial to initialize
-  
+
   auto cfg = M5.config();
   StickCP2.begin(cfg);
   StickCP2.Display.setRotation(1);
@@ -218,7 +217,7 @@ void setup() {
   StickCP2.Display.setTextDatum(middle_center);
   StickCP2.Display.setTextFont(&fonts::Orbitron_Light_24);
   StickCP2.Display.setTextSize(1);
-  
+
   Serial.println("Starting ...\n\n");
 
   pinMode(LED_PIN, OUTPUT);
@@ -230,18 +229,17 @@ void setup() {
   Serial.println("[ROS Host]: " + nm.getRosHost());
   Serial.println("[ROS Port]: " + String(nm.getRosPort()));
 
-  if(StickCP2.BtnB.isPressed()) {
+  if (StickCP2.BtnB.isPressed()) {
     StickCP2.Speaker.tone(8000, 20);
     Serial.println("Reseting network settings!");
     nm.resetConfig();
     delay(3000);
   }
 
-  set_microros_wifi_transports(const_cast<char*>(nm.getWifiSSID().c_str()), 
-                      const_cast<char*>(nm.getWifiPassword().c_str()), 
-                      const_cast<char*>(nm.getRosHost().c_str()), 
-                      nm.getRosPort());
+  set_microros_wifi_transports(const_cast<char *>(nm.getWifiSSID().c_str()),
+                               const_cast<char *>(nm.getWifiPassword().c_str()),
+                               const_cast<char *>(nm.getRosHost().c_str()),
+                               nm.getRosPort());
 
   ros_subscribe();
 }
-
