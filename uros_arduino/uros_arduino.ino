@@ -134,14 +134,6 @@ void ros_subscribe() {
   tf_msg.transforms.capacity = 1;
 
   tf_msg.transforms.data[0] = fixed_transform;
-
-  auto cfg = M5.config();
-  StickCP2.begin(cfg);
-  StickCP2.Display.setRotation(1);
-  StickCP2.Display.setTextColor(GREEN);
-  StickCP2.Display.setTextDatum(middle_center);
-  StickCP2.Display.setTextFont(&fonts::Orbitron_Light_24);
-  StickCP2.Display.setTextSize(1);
 }
 
 double theta = 0, last_theta = 0;
@@ -218,7 +210,15 @@ void loop() {
 void setup() {  
   Serial.begin(115200);
   delay(300);  // Allow Serial to initialize
-
+  
+  auto cfg = M5.config();
+  StickCP2.begin(cfg);
+  StickCP2.Display.setRotation(1);
+  StickCP2.Display.setTextColor(GREEN);
+  StickCP2.Display.setTextDatum(middle_center);
+  StickCP2.Display.setTextFont(&fonts::Orbitron_Light_24);
+  StickCP2.Display.setTextSize(1);
+  
   Serial.println("Starting ...\n\n");
 
   pinMode(LED_PIN, OUTPUT);

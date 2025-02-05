@@ -56,7 +56,7 @@ bool NetworkManager::loadConfig() {
 }
 
 void NetworkManager::resetConfig() {
-  //  SPIFFS.remove(CONFIG_FILE);
+    SPIFFS.remove(CONFIG_FILE);
 
     Serial.println("Reset network config");
     delay(3000);
@@ -115,17 +115,10 @@ void NetworkManager::setup() {
         Serial.println("WiFi is not connected.");
     } else {
         Serial.println("WiFi is connected.");
-    }
-
-    if(true) {
-      Serial.println("Saving...");
-      
-      Serial.println("ROS Host: " + ros_host);
-      Serial.println("ROS Port: " + String(ros_port));
-      Serial.println("SSID: " + wifi_ssid);
-      Serial.println("wifi_password: " + wifi_password);
-
-      saveConfig();
+        if(shouldStartConfigPortal) {
+          Serial.println("Saving config...");
+          saveConfig();
+        }
     }
 }
 
