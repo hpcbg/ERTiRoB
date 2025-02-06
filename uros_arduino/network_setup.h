@@ -7,39 +7,33 @@
 
 #define CONFIG_FILE "/config.json"
 
-class NetworkManager {
+
+class NetworkManager : public WiFiManager {
 private:
   String wifi_ssid;
   String wifi_password;
   String ros_host;
   int ros_port;
+  
+  WiFiManagerParameter custom_ros_host;
+  WiFiManagerParameter custom_ros_port;
 
   bool saveConfig();
   bool loadConfig();
 
 public:
-  NetworkManager()
-    : wifi_ssid(""), wifi_password(""), ros_host(""), ros_port(0) {
-  }
-
-  static NetworkManager* instance;
-  bool shouldSaveConfig = false;
+    NetworkManager() 
+    : custom_ros_host("ros_host", "ROS Host", "192.168.0.1", 40), 
+      custom_ros_port("ros_port", "ROS Port", "8888", 6) {}
 
   void setup();
   void resetConfig();
+  
+  String getWifiSSID() const;
+  String getWifiPassword() const;
 
-  // Getter and Setter methods
-  String getWifiSSID();
-  void setWifiSSID(const String& ssid);
-
-  String getWifiPassword();
-  void setWifiPassword(const String& password);
-
-  String getRosHost();
-  void setRosHost(const String& host);
-
+  String getRosHost() const;
   int getRosPort();
-  void setRosPort(int port);
 };
 
 #endif  // NETWORK_MANAGER_H

@@ -1,160 +1,112 @@
 #include "network_setup.h"  // Only include the header once here
 #include <micro_ros_arduino.h>
 
-static bool shouldSaveConfig = false;
+#define CP() Serial.printf("%s:%d\n", __FUNCTION__, __LINE__)
 
 bool NetworkManager::saveConfig() {
-  Serial.println("saveConfig enter");
+  StaticJsonDocument<256> doc;
+  doc["wifi_ssid"] = wifi_ssid;
+  doc["wifi_password"] = wifi_password;
+  doc["ros_host"] = ros_host;
+  doc["ros_port"] = ros_port;
 
-  StaticJsonDocument<512> jsonConfig;
-  jsonConfig["wifi_ssid"] = wifi_ssid;
-  jsonConfig["wifi_password"] = wifi_password;
-  jsonConfig["ros_host"] = ros_host;
-  jsonConfig["ros_port"] = String(ros_port);
-
-  File configFile = SPIFFS.open(CONFIG_FILE, "w");
-  if (!configFile) {
-    Serial.println("Failed to open config file for writing");
-    return false;
+  File file = SPIFFS.open(CONFIG_FILE, "w");
+  if (!file) {
+      Serial.println("Failed to open config file for writing");
+      return false;
   }
 
-  serializeJson(jsonConfig, configFile);
-  configFile.close();
-
-  Serial.println("saveConfig exit");
+  serializeJson(doc, file);
+  file.close();
   return true;
 }
 
 bool NetworkManager::loadConfig() {
-  if (!SPIFFS.exists(CONFIG_FILE)) {
-    Serial.println("Config file does not exist");
-
-    return false;
+  if (!SPIFFS.begin(true)) {
+      Serial.println("Failed to mount SPIFFS");
+      return false;
   }
 
-  File configFile = SPIFFS.open(CONFIG_FILE, "r");
-  if (!configFile) {
-    Serial.println("Failed to open config file for reading");
-    return false;
+  File file = SPIFFS.open(CONFIG_FILE, "r");
+  if (!file) {
+      Serial.println("Failed to open config file");
+      return false;
   }
 
-  StaticJsonDocument<512> jsonConfig;
-  DeserializationError error = deserializeJson(jsonConfig, configFile);
+  StaticJsonDocument<256> doc;
+  DeserializationError error = deserializeJson(doc, file);
+  file.close();
   if (error) {
-    Serial.println("Failed to parse config file");
-    return false;
+      Serial.println("Failed to parse config file");
+      return false;
   }
 
-  wifi_ssid = jsonConfig["wifi_ssid"].as<String>();
-  wifi_password = jsonConfig["wifi_password"].as<String>();
-  ros_host = jsonConfig["ros_host"].as<String>();
-  ros_port = jsonConfig["ros_port"].as<int>();
+  wifi_ssid = doc["wifi_ssid"].as<String>();
+  wifi_password = doc["wifi_password"].as<String>();
+  ros_host = doc["ros_host"].as<String>();
+  ros_port = doc["ros_port"];
 
-  configFile.close();
+  Serial.printf("ROS: %s:%d\n", ros_host, ros_port);
 
   return true;
 }
 
 void NetworkManager::resetConfig() {
-  SPIFFS.remove(CONFIG_FILE);
+  if (!SPIFFS.begin(true)) {
+      Serial.println("Failed to mount SPIFFS");
+  }
 
-  Serial.println("Reset network config");
-  delay(3000);
-  ESP.restart();
+  bool retval = SPIFFS.remove(CONFIG_FILE);
+  Serial.printf("resetConfig: %d\n",  retval);
 }
 
-void saveConfigCallback() {
-  Serial.println("Configuration changed, marking for save...");
-  shouldSaveConfig = true;
-}
 
 void NetworkManager::setup() {
-  WiFiManager wifiManager;
-  if (!SPIFFS.begin(true)) {
-    Serial.println("Failed to mount SPIFFS");
-    return;
-  }
+  bool loaded = loadConfig();
 
-  loadConfig();
+  addParameter(&custom_ros_host);
+  addParameter(&custom_ros_port);
 
-  // Start WiFiManager configuration portal if needed
-  bool shouldStartConfigPortal = (wifi_ssid.length() == 0
-                                  || wifi_password.length() == 0
-                                  || ros_host.length() == 0
-                                  || ros_port == 0);
+  setSaveConfigCallback([this]() {
+      Serial.println("Saving configuration...");
 
-  if (shouldStartConfigPortal) {
-    // Set the save configuration callback
-    wifiManager.setSaveConfigCallback(saveConfigCallback);
-
-    // WiFiManager parameters for ROS settings
-    WiFiManagerParameter custom_ros_host("ros_host", "ROS host", "192.168.88.10", 40);
-    wifiManager.addParameter(&custom_ros_host);
-    ros_host = custom_ros_host.getValue();
-
-    WiFiManagerParameter custom_ros_port("ros_port", "ROS port", "8888", 6);
-    wifiManager.addParameter(&custom_ros_port);
-    ros_port = atoi(custom_ros_port.getValue());
-
-    Serial.println("Starting configuration portal...");
-    if (!wifiManager.startConfigPortal("ESP32-Provisioning")) {
-      Serial.println("Failed to connect and hit timeout");
-      delay(3000);
-      ESP.restart();
-    }
-
-    wifi_ssid = WiFi.SSID();
-    wifi_password = WiFi.psk();
-  } else {
-    Serial.println("Using loaded config...");
-    WiFi.begin(wifi_ssid.c_str(), wifi_password.c_str());
-  }
-
-  delay(2000);  // Wait 2 seconds to ensure WiFi is fully connected
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("WiFi is not connected.");
-  } else {
-    Serial.println("WiFi is connected.");
-    if (shouldStartConfigPortal) {
-      Serial.println("Saving config...");
+      wifi_ssid = WiFi.SSID();  // Get current WiFi SSID
+      wifi_password = WiFi.psk(); // Get current WiFi passwor
+      ros_host = custom_ros_host.getValue();
+      ros_port = String(custom_ros_port.getValue()).toInt();
       saveConfig();
-    }
-  }
+  });
+
+  if(!loaded) {
+     startConfigPortal();
+     ros_host = custom_ros_host.getValue();
+     ros_port = String(custom_ros_port.getValue()).toInt();
+
+     saveConfig();
+  }  
+
+  Serial.println("Configuring Micro-ROS WiFi transport...");
+  set_microros_wifi_transports(
+      const_cast<char*>(wifi_ssid.c_str()), 
+      const_cast<char*>(wifi_password.c_str()), 
+      const_cast<char*>(ros_host.c_str()), 
+      ros_port
+  );
+
 }
 
-// Getter and Setter methods
-String NetworkManager::getWifiSSID() {
-  return wifi_ssid;
+String NetworkManager::getWifiSSID() const {
+    return wifi_ssid;
 }
 
-void NetworkManager::setWifiSSID(const String& ssid) {
-  wifi_ssid = ssid;
-  saveConfig();
-}
-
-String NetworkManager::getWifiPassword() {
+String NetworkManager::getWifiPassword() const {
   return wifi_password;
 }
 
-void NetworkManager::setWifiPassword(const String& password) {
-  wifi_password = password;
-  saveConfig();
-}
-
-String NetworkManager::getRosHost() {
+String NetworkManager::getRosHost() const {
   return ros_host;
-}
-
-void NetworkManager::setRosHost(const String& host) {
-  ros_host = host;
-  saveConfig();
 }
 
 int NetworkManager::getRosPort() {
   return ros_port;
-}
-
-void NetworkManager::setRosPort(int port) {
-  ros_port = port;
-  saveConfig();
 }
