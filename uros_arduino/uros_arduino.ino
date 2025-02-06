@@ -217,7 +217,8 @@ void setup() {
   StickCP2.Display.setTextDatum(middle_center);
   StickCP2.Display.setTextFont(&fonts::Orbitron_Light_24);
   StickCP2.Display.setTextSize(1);
-
+  StickCP2.update();
+  StickCP2.Display.clear();
   Serial.println("Starting ...\n\n");
 
   pinMode(LED_PIN, OUTPUT);
