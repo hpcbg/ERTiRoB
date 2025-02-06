@@ -25,9 +25,6 @@ std_msgs__msg__Int32 battery_msg;
 std_msgs__msg__Int32 buttonA_msg;
 std_msgs__msg__Int32 buttonB_msg;
 sensor_msgs__msg__Imu imu_msg;
-//geometry_msgs__msg__TransformStamped imu_transform;
-geometry_msgs__msg__TransformStamped fixed_transform;
-tf2_msgs__msg__TFMessage tf_msg;
 
 rclc_support_t support;
 rcl_allocator_t allocator;
@@ -39,26 +36,13 @@ rcl_timer_t timer;
 #define RCCHECK(fn) \
   { \
     rcl_ret_t temp_rc = fn; \
-    if ((temp_rc != RCL_RET_OK)) { error_loop(); } \
+    if ((temp_rc != RCL_RET_OK)) { Serial.println("RCCHECK: " + temp_rc); } \
   }
 #define RCSOFTCHECK(fn) \
   { \
     rcl_ret_t temp_rc = fn; \
-    if ((temp_rc != RCL_RET_OK)) {} \
+    if ((temp_rc != RCL_RET_OK)) { Serial.println("RCSOFTCHECK: " + temp_rc); } \
   }
-
-
-void error_loop() {
-  while (1) {
-    digitalWrite(LED_PIN, !digitalRead(LED_PIN));
-    delay(100);
-  }
-}
-
-void timer_callback(rcl_timer_t *timer, int64_t last_call_time) {
-  RCLC_UNUSED(last_call_time);
-  RCLC_UNUSED(timer);
-}
 
 void ros_subscribe() {
   allocator = rcl_get_default_allocator();
@@ -97,101 +81,70 @@ void ros_subscribe() {
     ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Imu),
     "/imu/data_raw"));
 
-  // Initialize the TF publisher
-  RCCHECK(rclc_publisher_init_default(
-    &tf_publisher,
-    &node,
-    ROSIDL_GET_MSG_TYPE_SUPPORT(tf2_msgs, msg, TFMessage),
-    "/tf"));
 
   // Initialize IMU message
   imu_msg.orientation_covariance[0] = -1;  // Mark orientation as unavailable
   imu_msg.header.frame_id.data = (char *)"imu_frame";
   imu_msg.header.frame_id.size = strlen("imu_frame");
   imu_msg.header.frame_id.capacity = imu_msg.header.frame_id.size + 1;
-
-  // // Setup fixed transform (map -> imu_frame)
-  fixed_transform.header.frame_id.data = (char *)"map";  // Fixed frame
-  fixed_transform.header.frame_id.size = strlen("map");
-  fixed_transform.header.frame_id.capacity = fixed_transform.header.frame_id.size + 1;
-
-  fixed_transform.child_frame_id.data = (char *)"base_link";  // Root frame
-  fixed_transform.child_frame_id.size = strlen("base_link");
-  fixed_transform.child_frame_id.capacity = fixed_transform.child_frame_id.size + 1;
-
-  // Define static transform values (adjust as needed)
-  fixed_transform.transform.translation.x = 0.0;
-  fixed_transform.transform.translation.y = 0.0;
-  fixed_transform.transform.translation.z = 0.0;
-  fixed_transform.transform.rotation.x = 0.0;
-  fixed_transform.transform.rotation.y = 0.0;
-  fixed_transform.transform.rotation.z = 0.0;
-  fixed_transform.transform.rotation.w = 1.0;
-
-  // Add the fixed transform to the tf message
-  tf_msg.transforms.data = (geometry_msgs__msg__TransformStamped *)malloc(1 * sizeof(geometry_msgs__msg__TransformStamped));
-  tf_msg.transforms.size = 1;
-  tf_msg.transforms.capacity = 1;
-
-  tf_msg.transforms.data[0] = fixed_transform;
 }
 
-double theta = 0, last_theta = 0;
-double phi = 0, last_phi = 0;
-double alpha = 0.2;
-
 void ros_publish() {
+  static int last_battery, last_buttonA, last_buttonB;
+  static float last_gyro_x, last_gyro_y, last_gyro_z;
+  static float last_accel_x, last_accel_y, last_accel_z;
+
   auto imu_update = StickCP2.Imu.update();
   int vol = StickCP2.Power.getBatteryVoltage();
-  battery_msg.data = vol;
+
+  if (vol != last_battery) {
+    battery_msg.data = vol;
+    RCSOFTCHECK(rcl_publish(&battery_publisher, &battery_msg, NULL));
+    last_battery = vol;
+  }
 
   int stateA = StickCP2.BtnA.getState();
-  buttonA_msg.data = stateA;
+  if (stateA != last_buttonA) {
+    buttonA_msg.data = stateA;
+    RCSOFTCHECK(rcl_publish(&buttonA_publisher, &buttonA_msg, NULL));
+    last_buttonA = stateA;
+  }
+
   int stateB = StickCP2.BtnB.getState();
-  buttonB_msg.data = stateB;
+  if (stateB != last_buttonB) {
+    buttonB_msg.data = stateB;
+    RCSOFTCHECK(rcl_publish(&buttonB_publisher, &buttonB_msg, NULL));
+    last_buttonB = stateB;
+  }
 
   auto data = StickCP2.Imu.getImuData();
-  imu_msg.linear_acceleration.x = data.accel.x;
-  imu_msg.linear_acceleration.y = data.accel.y;
-  imu_msg.linear_acceleration.z = data.accel.z;
-  imu_msg.angular_velocity.x = data.gyro.x;
-  imu_msg.angular_velocity.y = data.gyro.y;
-  imu_msg.angular_velocity.z = data.gyro.z;
-  imu_msg.header.stamp.sec = millis() / 1000;
-  imu_msg.header.stamp.nanosec = (millis() % 1000) * 1000000;
 
-  // Publish the fixed frame transform
-  if ((data.accel.x < 1) && (data.accel.x > -1)) {
-    theta = asin(-data.accel.x) * 57.295;
+  float accel_thresh = 0.05;  // Example threshold for acceleration
+  float gyro_thresh = 5;      // Example threshold for gyroscope
+
+  bool accel_changed = (fabs(data.accel.x - last_accel_x) > accel_thresh || fabs(data.accel.y - last_accel_y) > accel_thresh || fabs(data.accel.z - last_accel_z) > accel_thresh);
+
+  bool gyro_changed = (fabs(data.gyro.x - last_gyro_x) > gyro_thresh || fabs(data.gyro.y - last_gyro_y) > gyro_thresh || fabs(data.gyro.z - last_gyro_z) > gyro_thresh);
+
+  if (accel_changed || gyro_changed) {
+    imu_msg.linear_acceleration.x = data.accel.x;
+    imu_msg.linear_acceleration.y = data.accel.y;
+    imu_msg.linear_acceleration.z = data.accel.z;
+    imu_msg.angular_velocity.x = data.gyro.x;
+    imu_msg.angular_velocity.y = data.gyro.y;
+    imu_msg.angular_velocity.z = data.gyro.z;
+    imu_msg.header.stamp.sec = millis() / 1000;
+    imu_msg.header.stamp.nanosec = (millis() % 1000) * 1000000;
+
+    RCSOFTCHECK(rcl_publish(&imu_publisher, &imu_msg, NULL));
+
+    last_accel_x = data.accel.x;
+    last_accel_y = data.accel.y;
+    last_accel_z = data.accel.z;
+    last_gyro_x = data.gyro.x;
+    last_gyro_y = data.gyro.y;
+    last_gyro_z = data.gyro.z;
   }
-  if (data.accel.z != 0) {
-    phi = atan(data.accel.y / data.accel.z) * 57.295;
-  }
-  theta = alpha * theta + (1 - alpha) * last_theta;
-  phi = alpha * phi + (1 - alpha) * last_phi;
-  // convert to quaternion
-  double cr = cos(phi * 0.5 * 3.14159 / 180.0);
-  double sr = sin(phi * 0.5 * 3.14159 / 180.0);
-  double cp = cos(theta * 0.5 * 3.14159 / 180.0);
-  double sp = sin(theta * 0.5 * 3.14159 / 180.0);
-  double cy = cos(0 * 0.5);
-  double sy = sin(0 * 0.5);
-  fixed_transform.transform.rotation.x = sr * cp * cy - cr * sp * sy;
-  fixed_transform.transform.rotation.y = cr * sp * cy + sr * cp * sy;
-  fixed_transform.transform.rotation.z = cr * cp * sy - sr * sp * cy;
-  fixed_transform.transform.rotation.w = cr * cp * cy + sr * sp * sy;
-  last_theta = theta;
-  last_phi = phi;
-  fixed_transform.header.stamp.sec = millis() / 1000;
-  fixed_transform.header.stamp.nanosec = (millis() % 1000) * 1000000;
-
-  tf_msg.transforms.data[0] = fixed_transform;
-
-  RCSOFTCHECK(rcl_publish(&battery_publisher, &battery_msg, NULL));
-  RCSOFTCHECK(rcl_publish(&buttonA_publisher, &buttonA_msg, NULL));
-  RCSOFTCHECK(rcl_publish(&buttonB_publisher, &buttonB_msg, NULL));
-  RCSOFTCHECK(rcl_publish(&imu_publisher, &imu_msg, NULL));
-  RCSOFTCHECK(rcl_publish(&tf_publisher, &tf_msg, NULL));
 }
 
 void handlePreOtaUpdateCallback() {
@@ -226,7 +179,7 @@ void setup() {
   if (StickCP2.BtnA.isPressed()) {
     StickCP2.Speaker.tone(8000, 20);
     nm.resetConfig();
-    
+
     Serial.flush();
     delay(300);
     ESP.restart();
@@ -243,6 +196,5 @@ void setup() {
   Serial.println("[WiFi IP]" + WiFi.localIP());
   Serial.println("[ROS Host]: " + nm.getRosHost());
   Serial.println("[ROS Port]: " + String(nm.getRosPort()));
-
   ros_subscribe();
 }
