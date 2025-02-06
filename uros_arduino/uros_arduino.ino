@@ -141,20 +141,14 @@ double phi = 0, last_phi = 0;
 double alpha = 0.2;
 
 void ros_publish() {
-  StickCP2.update();
-  StickCP2.Display.clear();
   auto imu_update = StickCP2.Imu.update();
   int vol = StickCP2.Power.getBatteryVoltage();
   battery_msg.data = vol;
-  StickCP2.Display.setCursor(10, 30);
-  StickCP2.Display.printf("BAT: %dmV \n", vol);
 
   int stateA = StickCP2.BtnA.getState();
   buttonA_msg.data = stateA;
-  StickCP2.Display.printf("btnA state: %d \n", stateA);
   int stateB = StickCP2.BtnB.getState();
   buttonB_msg.data = stateB;
-  StickCP2.Display.printf("btnB state: %d \n", stateB);
 
   auto data = StickCP2.Imu.getImuData();
   imu_msg.linear_acceleration.x = data.accel.x;
@@ -198,33 +192,36 @@ void ros_publish() {
   RCSOFTCHECK(rcl_publish(&buttonB_publisher, &buttonB_msg, NULL));
   RCSOFTCHECK(rcl_publish(&imu_publisher, &imu_msg, NULL));
   RCSOFTCHECK(rcl_publish(&tf_publisher, &tf_msg, NULL));
-  delay(100);
 }
 
+void handlePreOtaUpdateCallback() {
+  Update.onProgress([](unsigned int progress, unsigned int total) {
+    Serial.printf("CUSTOM Progress: %u%%\r", (progress / (total / 100)));
+  });
+}
 
 void loop() {
   ros_publish();
+
+  ArduinoOTA.handle();
 }
 
 void setup() {
   Serial.begin(115200);
-  
+
   auto cfg = M5.config();
   StickCP2.begin(cfg);
   StickCP2.Display.setRotation(1);
-  StickCP2.Display.setTextColor(GREEN);
+  M5.Display.setTextColor(TFT_WHITE, TFT_BLACK);
   StickCP2.Display.setTextDatum(middle_center);
   StickCP2.Display.setTextFont(&fonts::Orbitron_Light_24);
   StickCP2.Display.setTextSize(1);
-  
+
   StickCP2.update();
   StickCP2.Display.clear();
 
   StickCP2.Display.setCursor(10, 30);
-  StickCP2.Display.printf("Starting ... \n");
-  
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, HIGH);
+  StickCP2.Display.printf("Starting .......\n");
 
   if (StickCP2.BtnA.isPressed()) {
     StickCP2.Speaker.tone(8000, 20);
@@ -238,9 +235,12 @@ void setup() {
   nm.setup();
 
   StickCP2.Display.clear();
-  StickCP2.Display.printf("Connected.\n");
+  M5.Display.println("Connected!");
+
+  Serial.println("Connected.");
 
   Serial.println("[WiFi SSID]: " + nm.getWifiSSID());
+  Serial.println("[WiFi IP]" + WiFi.localIP());
   Serial.println("[ROS Host]: " + nm.getRosHost());
   Serial.println("[ROS Port]: " + String(nm.getRosPort()));
 
