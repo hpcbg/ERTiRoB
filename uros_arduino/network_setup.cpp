@@ -147,3 +147,7 @@ String NetworkManager::getRosHost() const {
 int NetworkManager::getRosPort() {
   return ros_port;
 }
+
+String NetworkManager::getLocalIP() {
+  return WiFi.localIP().toString();
+}

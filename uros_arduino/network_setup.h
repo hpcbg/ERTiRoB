@@ -36,6 +36,7 @@ public:
 
   String getRosHost() const;
   int getRosPort();
+  String getLocalIP();
 };
 
 #endif  // NETWORK_MANAGER_H

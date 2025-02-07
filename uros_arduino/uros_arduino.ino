@@ -173,7 +173,7 @@ void setup() {
   StickCP2.update();
   StickCP2.Display.clear();
 
-  StickCP2.Display.setCursor(10, 30);
+  StickCP2.Display.setCursor(10, 10);
   StickCP2.Display.printf("Starting .......\n");
 
   if (StickCP2.BtnA.isPressed()) {
@@ -193,8 +193,9 @@ void setup() {
   Serial.println("Connected.");
 
   Serial.println("[WiFi SSID]: " + nm.getWifiSSID());
-  Serial.println("[WiFi IP]" + WiFi.localIP());
+  Serial.println("[WiFi IP]: " + nm.getLocalIP());
   Serial.println("[ROS Host]: " + nm.getRosHost());
   Serial.println("[ROS Port]: " + String(nm.getRosPort()));
+
   ros_subscribe();
 }
