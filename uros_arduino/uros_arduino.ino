@@ -94,7 +94,8 @@ void ros_publish() {
   static float last_gyro_x, last_gyro_y, last_gyro_z;
   static float last_accel_x, last_accel_y, last_accel_z;
 
-  auto imu_update = StickCP2.Imu.update();
+  StickCP2.update();
+  StickCP2.Imu.update();
   int vol = StickCP2.Power.getBatteryVoltage();
 
   if (vol != last_battery) {
@@ -122,9 +123,13 @@ void ros_publish() {
   float accel_thresh = 0.05;  // Example threshold for acceleration
   float gyro_thresh = 5;      // Example threshold for gyroscope
 
-  bool accel_changed = (fabs(data.accel.x - last_accel_x) > accel_thresh || fabs(data.accel.y - last_accel_y) > accel_thresh || fabs(data.accel.z - last_accel_z) > accel_thresh);
+  bool accel_changed = (fabs(data.accel.x - last_accel_x) > accel_thresh 
+    || fabs(data.accel.y - last_accel_y) > accel_thresh 
+    || fabs(data.accel.z - last_accel_z) > accel_thresh);
 
-  bool gyro_changed = (fabs(data.gyro.x - last_gyro_x) > gyro_thresh || fabs(data.gyro.y - last_gyro_y) > gyro_thresh || fabs(data.gyro.z - last_gyro_z) > gyro_thresh);
+  bool gyro_changed = (fabs(data.gyro.x - last_gyro_x) > gyro_thresh 
+    || fabs(data.gyro.y - last_gyro_y) > gyro_thresh 
+    || fabs(data.gyro.z - last_gyro_z) > gyro_thresh);
 
   if (accel_changed || gyro_changed) {
     imu_msg.linear_acceleration.x = data.accel.x;
@@ -155,6 +160,8 @@ void handlePreOtaUpdateCallback() {
 
 void loop() {
   ros_publish();
+
+  StickCP2.Display.setCursor(10, 30);
 
   ArduinoOTA.handle();
 }
