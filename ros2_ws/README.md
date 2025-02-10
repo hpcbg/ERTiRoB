@@ -50,9 +50,11 @@ The `board_recorder_interfaces` package can be compiled with `colcon build --pac
 
 The developed packages provide the following actions for control of the recording process:
 
-1. `record` of type `board_recorder_interfaces/action/Record` - action for starting a new recording.
+1. `/record` of type `board_recorder_interfaces/action/Record` - action for starting a new recording.
 
-    - This action requires the parameter `string recording_name` which is used for definining the name of the recording.
+    - This action requires the following parameters:
+        - `string task_board_id` - the unique id of the task board;
+        - `string protocol` - the name of the current protocol executed by the robot.
 
     - This action will return as a result `int32 recording_id` which will be the id of the started recording.
 
@@ -60,17 +62,19 @@ The developed packages provide the following actions for control of the recordin
 
     - Note: if the recording was already started the id of the current recording will be returned.
 
-    - Sample call: `ros2 action send_goal --feedback record board_recorder_interfaces/action/Record "{recording_name: 'name'}"`
+    - Sample call: `ros2 action send_goal --feedback record board_recorder_interfaces/action/Record "{task_board_id: 'e8b4b12f2b14', protocol: 'protocol_name'}"`
 
-2. `stop` of type `board_recorder_interfaces/action/Stop` - action for stopping of the corresponding recording.
+2. `/stop` of type `board_recorder_interfaces/action/Stop` - action for stopping of the corresponding recording.
 
-    - This action requires the parameter `int32 recording_id` which is used for checking if the stop action is requested for the current recording.
+    - This action requires the parameters:
+        - `string task_board_id` - the unique id of the task board;
+        - `int32 recording_id` - this should be the id of the current recording.
 
     - This action will return as a result `bool success` which will be `true` if the provided `recording_id` is equal to the current recording id.
 
-    - This action will return as a feedback `bool is_authorized` which will be `false` if the `recording_id` is wrong. This field is reserved if some kind of user authentication is implemented in the future.
+    - This action will return as a feedback `bool is_authorized`. This field is reserved if some kind of user authentication is implemented in the future.
 
-    - Sample call: `ros2 action send_goal --feedback stop board_recorder_interfaces/action/Stop "{recording_id: 1}"`
+    - Sample call: `ros2 action send_goal --feedback stop board_recorder_interfaces/action/Stop "{task_board_id: 'e8b4b12f2b14', recording_id: 1739219462}"`
 
 ## Services provided by the task board recorder
 

@@ -139,47 +139,70 @@ class BoardRecorder(Node):
         return response
 
     def execute_record_callback(self, goal_handle):
-        self.get_logger().info(f'Requested Record for new recording with a name {
-            goal_handle.request.recording_name}')
+        board_id = goal_handle.request.task_board_id
+        protocol = goal_handle.request.protocol
+
+        self.get_logger().info(
+            f'Requested Record for new recording on board {board_id} for protocol {protocol}')
+
+        if not board_id in self.boards:
+            feedback_msg = Record.Feedback()
+            feedback_msg.is_busy = True
+            goal_handle.publish_feedback(feedback_msg)
+
+            result = Record.Result()
+            result.recording_id = 0
+            goal_handle.abort()
+            return result
 
         feedback_msg = Record.Feedback()
-        feedback_msg.is_busy = self.is_recording
+        feedback_msg.is_busy = self.boards[board_id]['is_recording']
         goal_handle.publish_feedback(feedback_msg)
 
         result = Record.Result()
         result.recording_id = 0
-        if self.is_recording:
-            result.recording_id = self.current_recording_id
+        if self.boards[board_id]['is_recording']:
+            result.recording_id = self.boards[board_id]['current_recording_id']
             goal_handle.succeed()
         else:
-            self.is_recording = True
-            self.current_recording_start_time = self.get_clock().now().nanoseconds * 1e-9
+            self.boards[board_id]['current_recording_start_time'] = self.get_clock(
+            ).now().nanoseconds * 1e-9
+            recording_id = int(
+                self.boards[board_id]['current_recording_start_time'])
+            self.boards[board_id]['current_recording_id'] = recording_id
+            self.boards[board_id]['is_recording'] = True
+            recording_id
             cur = self.db_con.cursor()
-            cur.execute(f'INSERT INTO recordings (name, start_time, status) VALUES (\'{
-                        goal_handle.request.recording_name}\', {self.current_recording_start_time}, \'Recording\')')
+            cur.execute(f'INSERT INTO recordings (task_board_id, protocol, id, start_time, status) VALUES \
+                        (?, ?, {recording_id}, {self.boards[board_id]['current_recording_start_time']}, \
+                        \'Recording\')', [board_id, protocol])
             self.db_con.commit()
-            self.current_recording_id = cur.lastrowid
-            result.recording_id = self.current_recording_id
+            result.recording_id = recording_id
             goal_handle.succeed()
         return result
 
     def execute_stop_callback(self, goal_handle):
-        self.get_logger().info(f'Requested Stop for recording with an id {
-            goal_handle.request.recording_id}')
+        board_id = goal_handle.request.task_board_id
+        recording_id = goal_handle.request.recording_id
+
+        self.get_logger().info(
+            f'Requested Stop for recording with an id {recording_id} on task board {board_id}')
 
         feedback_msg = Stop.Feedback()
-        feedback_msg.is_authorized = self.current_recording_id == goal_handle.request.recording_id
+        feedback_msg.is_authorized = True
         goal_handle.publish_feedback(feedback_msg)
 
         result = Stop.Result()
         result.success = feedback_msg.is_authorized
         cur = self.db_con.cursor()
-        row = cur.execute(f'SELECT id, status FROM recordings WHERE id = \'{
-                          goal_handle.request.recording_id}\'')
+        row = cur.execute(
+            'SELECT id, status FROM recordings WHERE task_board_id = ? AND id = ?',
+            [board_id, recording_id])
         row = cur.fetchone()
         if row:
-            cur.execute(f'UPDATE recordings SET status = \'Completed\' WHERE id = \'{
-                        goal_handle.request.recording_id}\'')
+            cur.execute(
+                'UPDATE recordings SET status = \'Completed\' WHERE task_board_id = ? AND id = ?',
+                [board_id, recording_id])
             self.db_con.commit()
             self.is_recording = False
             goal_handle.succeed()
@@ -194,14 +217,23 @@ class BoardRecorder(Node):
                 name = config['name']
                 time = self.get_clock().now().nanoseconds * 1e-9
                 if new != self.boards[board_id]['subs'][name]['value']:
-                    if self.boards[board_id]['subs'][name]['timeout'] > 0 and self.boards[board_id]['subs'][name]['timeout'] * 1e-3 >= time - self.boards[board_id]['subs'][name]['time']:
+                    if self.boards[board_id]['subs'][name]['timeout'] > 0 and \
+                        self.boards[board_id]['subs'][name]['timeout'] * 1e-3 >= \
+                            time - self.boards[board_id]['subs'][name]['time']:
                         return
                     if self.boards[board_id]['is_recording']:
                         cur = self.db_con.cursor()
-                        cur.execute(f'INSERT INTO events (recording_id, name, data, time) VALUES ({
-                                    self.current_recording_id}, \'{name}\', \'{new}\', {time - self.current_recording_start_time})')
+                        cur.execute(
+                            f'INSERT INTO events (task_board_id, recording_id, name, data, time) VALUES \
+                              (\'{board_id}\', \
+                               {self.boards[board_id]['current_recording_id']}, \
+                               ?, \
+                               ?, \
+                               {time - self.boards[board_id]['current_recording_start_time']})',
+                            [name, new])
                         self.db_con.commit()
-                    self.get_logger().info(f'{time:.2f}: {name} -> {new}')
+                    self.get_logger().info(
+                        f'{time:.2f}: board id {board_id} - {name} -> {new}')
                     self.boards[board_id]['subs'][name]['value'] = new
                     self.boards[board_id]['subs'][name]['time'] = time
 
@@ -210,6 +242,7 @@ class BoardRecorder(Node):
 
         self.boards[board_id] = {
             'is_recording': False,
+            'current_recording_id': 0,
             'last_active': 0,
             'subs': {}
         }
@@ -255,31 +288,39 @@ class BoardRecorder(Node):
             self.db_con = sqlite3.connect(DB_FILE)
             cur = self.db_con.cursor()
             cur.execute(
-                'CREATE TABLE recordings(id         INTEGER PRIMARY KEY AUTOINCREMENT, \
-                                         name       VARCHAR(256), \
-                                         start_time DOUBLE, \
-                                         status     VARCHAR(16))')
+                'CREATE TABLE recordings(task_board_id VARCHAR(16), \
+                                         id            INTEGER, \
+                                         protocol      VARCHAR(256), \
+                                         start_time    DOUBLE, \
+                                         status        VARCHAR(16))')
             cur.execute(
-                'CREATE TABLE events(recording_id INTEGER, \
-                                     name TEXT, \
-                                     data TEXT, \
-                                     time DOUBLE)')
+                'CREATE INDEX recordings_task_board_id_idx ON recordings(task_board_id)')
             cur.execute(
-                'CREATE INDEX recording_id_idx ON events(recording_id)')
-        self.is_recording = False
-        self.current_recording_id = 0
+                'CREATE INDEX recordings_id_idx ON recordings(id)')
+            cur.execute(
+                'CREATE INDEX recordings_protocol_idx ON recordings(protocol)')
+            cur.execute(
+                'CREATE TABLE events(task_board_id VARCHAR(16), \
+                                     recording_id  INTEGER, \
+                                     name          VARCHAR(32), \
+                                     data          TEXT, \
+                                     time          DOUBLE)')
+            cur.execute(
+                'CREATE INDEX events_task_board_id_idx ON events(task_board_id)')
+            cur.execute(
+                'CREATE INDEX events_recording_id_idx ON events(recording_id)')
 
     def init_actions(self):
         self._record_action_server = ActionServer(
             self,
             Record,
-            'record',
+            '/record',
             self.execute_record_callback)
 
         self._stop_action_server = ActionServer(
             self,
             Stop,
-            'stop',
+            '/stop',
             self.execute_stop_callback)
 
     def init_services(self):

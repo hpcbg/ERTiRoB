@@ -1,4 +1,5 @@
-string recording_name
+string task_board_id
+string protocol
 ---
 int32 recording_id
 ---

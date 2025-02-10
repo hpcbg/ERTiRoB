@@ -46,42 +46,32 @@ source install/local_setup.bash
 ros2 run board_recorder board_recorder
 ```
 
-5. Start a new recording
-```
-ros2 action send_goal --feedback record board_recorder_interfaces/action/Record "{recording_name: '<name>'}"
-```
-
-6. Stop an existing recording
-```
-ros2 action send_goal --feedback stop board_recorder_interfaces/action/Stop "{recording_id: 1}"
-```
-
-7. Fetch recorded data
+5. Fetch recorded data
 ```
 ros2 service call fetch_recording board_recorder_interfaces/srv/FetchRecording "{recording_id: 1}"
 ```
 
-8. Fetch all sensors names
+6. Fetch all sensors names
 ```
 ros2 service call fetch_sensor_names board_recorder_interfaces/srv/FetchSensorNames "{}"
 ```
 
-9. Fetch sensor data
+7. Fetch sensor data
 ```
 ros2 service call fetch_sensor_data board_recorder_interfaces/srv/FetchSensorData "{sensor_name: 'voltage'}"
 ```
 
-10. Fetch latest recordings. If count is 0 the service will return all recordings
+8.  Fetch latest recordings. If count is 0 the service will return all recordings
 ```
 ros2 service call fetch_latest_recordings board_recorder_interfaces/srv/FetchLatestRecordings "{count: 10}"
 ```
 
-11. Fetch recording events for the given recording id and from the given time (time interval is inclusive)
+9.  Fetch recording events for the given recording id and from the given time (time interval is inclusive)
 ```
 ros2 service call fetch_recording_events board_recorder_interfaces/srv/FetchRecordingEvents "{recording_id: 1, from_time: 0}"
 ```
 
-12. Fetch current recording id (returns -1 if not recording)
+10.  Fetch current recording id (returns -1 if not recording)
 ```
 ros2 service call fetch_current_recording_id board_recorder_interfaces/srv/FetchCurrentRecordingId "{}"
 ```
