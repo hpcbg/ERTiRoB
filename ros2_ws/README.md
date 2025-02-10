@@ -80,39 +80,44 @@ The developed packages provide the following actions for control of the recordin
 
 The developed packages provide the following services for fetching the recordings data:
 
-1. `fetch_current_recording_id` of type `board_recorder_interfaces/srv/FetchCurrentRecordingId` - service for retrieving the id of the current recording.
+1. `/fetch_current_recording_id` of type `board_recorder_interfaces/srv/FetchCurrentRecordingId` - service for retrieving the id of the current recording.
 
-    - This sevice has no request parameters
+    - This sevice has a request parameter `string task_board_id` which is the unique id of the task board.
 
     - This service returns `int32 recording_id` which contains the id of the current recording. Value of `-1` will be returned if there is no active recording.
 
-    - Sample call: `ros2 service call fetch_current_recording_id board_recorder_interfaces/srv/FetchCurrentRecordingId "{}"`
+    - Sample call: `ros2 service call /fetch_current_recording_id board_recorder_interfaces/srv/FetchCurrentRecordingId "{task_board_id: 'e8b4b12f2b14'}"`
 
-2. `fetch_latest_recordings` of type `board_recorder_interfaces/srv/FetchLatestRecordings` - service for retrieving the info of the latest recordings which are stored in the database.
+2. `/fetch_latest_recordings` of type `board_recorder_interfaces/srv/FetchLatestRecordings` - service for retrieving the info of the latest recordings which are stored in the database.
 
-    - This sevice has a request parameter `int32 count` which is limiting the number of the returned recordings. If this parameter is set to `0` the service will return all recordings.
+    - This sevice has the following request parameters:
+        - `string task_board_id` - the unique id of the task board;
+        - `int32 count` - for limiting the number of the returned recordings. If this parameter is set to `0` the service will return all recordings.
 
     - This service returns `string recordings_list_json` which contains JSON object with the info of the corresponding recordings.
 
-    - Sample call: `ros2 service call fetch_latest_recordings board_recorder_interfaces/srv/FetchLatestRecordings "{count: 10}"`
+    - Sample call: `ros2 service call /fetch_latest_recordings board_recorder_interfaces/srv/FetchLatestRecordings "{task_board_id: 'e8b4b12f2b14', count: 10}"`
 
-3. `fetch_recording` of type `board_recorder_interfaces/srv/FetchRecording` - service for retrieving a specific recording.
+3. `/fetch_recording` of type `board_recorder_interfaces/srv/FetchRecording` - service for retrieving a specific recording.
 
-    - This sevice has a request parameter `int32 recording_id` which is the id of the requested recording.
+    - This sevice has the following request parameters:
+        - `string task_board_id` - the unique id of the task board;
+        - `int32 recording_id` which is the id of the requested recording.
 
     - This service returns `string recording_json` which contains JSON object with the requested recording.
 
-    - Sample call: `ros2 service call fetch_recording board_recorder_interfaces/srv/FetchRecording "{recording_id: 1}"`
+    - Sample call: `ros2 service call /fetch_recording board_recorder_interfaces/srv/FetchRecording "{task_board_id: 'e8b4b12f2b14', recording_id: 1739220569}"`
 
-4. `fetch_recording_events` of type `board_recorder_interfaces/srv/FetchRecordingEvents` - service for retrieving only specific events from a specific recording.
+4. `/fetch_recording_events` of type `board_recorder_interfaces/srv/FetchRecordingEvents` - service for retrieving only specific events from a specific recording.
 
     - This sevice has two request parameters:
-        -  `int32 recording_id` which is the id of the requested recording.
-        -  `float32 from_time` which is the time in seconds from which the events are requested. Note: the time interval is inclusive.
+        - `string task_board_id` - the unique id of the task board;
+        - `int32 recording_id` which is the id of the requested recording;
+        - `float32 from_time` which is the time in seconds from which the events are requested. Note: the time interval is inclusive.
 
     - This service returns `string events_json` which contains JSON object with the requested events.
 
-    - Sample call: `ros2 service call fetch_recording_events board_recorder_interfaces/srv/FetchRecordingEvents "{recording_id: 1, from_time: 5}"`
+    - Sample call: `ros2 service call /fetch_recording_events board_recorder_interfaces/srv/FetchRecordingEvents "{task_board_id: 'e8b4b12f2b14', recording_id: 1739220569, from_time: 5}"`
 
 The developed packages provide the following services for fetching the current data of any sensor:
 
