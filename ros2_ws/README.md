@@ -26,7 +26,7 @@ Each configuration file should contain a list of JSON objects for each task boar
 
 |name|value|sample value|
 |-|-|-|
-|`name`|String with the name of the sensor. It is not supposed to contain any whitespace characters.|"button_A"|
+|`name`|String with the name of the sensor. It is not supposed to contain any whitespace characters.|`"button_A"`|
 |`type`|String with a ROS 2 type.|`"std_msgs/msg/Int32"`|
 |`topic`|String with a ROS 2 topic.|`"/button/A_status"`|
 |`initial`|The initial value of the sensor.|`-1`|
