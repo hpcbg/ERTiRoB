@@ -7,6 +7,8 @@ import rclpy
 from rclpy.action import ActionServer
 from rclpy.node import Node
 
+from std_msgs.msg import String
+
 from board_recorder_interfaces.srv import FetchCurrentRecordingId, FetchRecording, FetchLatestRecordings, FetchRecordingEvents, FetchSensorNames, FetchSensorData
 from board_recorder_interfaces.action import Record, Stop
 
@@ -22,7 +24,7 @@ class BoardRecorder(Node):
         self.declare_parameter('board_config', './board_configs/default.json',
                                board_config_descriptor)
 
-        self.init_board()
+        self.init_boards_monitor()
         self.init_recordings_db()
         self.init_actions()
         self.init_services()
@@ -185,48 +187,65 @@ class BoardRecorder(Node):
             goal_handle.abort()
         return result
 
-    def generate_subscription(self, config):
-        def listener_callback(msg):
-            new = msg.data
-            name = config['name']
-            time = self.get_clock().now().nanoseconds * 1e-9
-            if new != self.subs[name]['value']:
-                if self.subs[name]['timeout'] > 0 and self.subs[name]['timeout'] * 1e-3 >= time - self.subs[name]['time']:
-                    return
-                if self.is_recording:
-                    cur = self.db_con.cursor()
-                    cur.execute(f'INSERT INTO events (recording_id, name, data, time) VALUES ({
-                                self.current_recording_id}, \'{name}\', \'{new}\', {time - self.current_recording_start_time})')
-                    self.db_con.commit()
-                self.get_logger().info(f'{time:.2f}: {name} -> {new}')
-                self.subs[name]['value'] = new
-                self.subs[name]['time'] = time
+    def init_board(self, board_id):
+        def generate_subscription(config):
+            def listener_callback(msg):
+                new = msg.data
+                name = config['name']
+                time = self.get_clock().now().nanoseconds * 1e-9
+                if new != self.boards[board_id]['subs'][name]['value']:
+                    if self.boards[board_id]['subs'][name]['timeout'] > 0 and self.boards[board_id]['subs'][name]['timeout'] * 1e-3 >= time - self.boards[board_id]['subs'][name]['time']:
+                        return
+                    if self.boards[board_id]['is_recording']:
+                        cur = self.db_con.cursor()
+                        cur.execute(f'INSERT INTO events (recording_id, name, data, time) VALUES ({
+                                    self.current_recording_id}, \'{name}\', \'{new}\', {time - self.current_recording_start_time})')
+                        self.db_con.commit()
+                    self.get_logger().info(f'{time:.2f}: {name} -> {new}')
+                    self.boards[board_id]['subs'][name]['value'] = new
+                    self.boards[board_id]['subs'][name]['time'] = time
 
-        self.subscription = self.create_subscription(
-            config['type'], config['topic'], listener_callback, 1)
+            self.boards[board_id]['subs']['subscription'] = self.create_subscription(
+                config['type'], f'/task_board_{board_id}/{config['topic']}', listener_callback, 1)
 
-    def init_board(self):
+        self.boards[board_id] = {
+            'is_recording': False,
+            'last_active': 0,
+            'subs': {}
+        }
+        for i in range(len(self.board_config)):
+            self.boards[board_id]['subs'][self.board_config[i]['name']] = {
+                'value': self.board_config[i]['initial'],
+                'sub': generate_subscription(self.board_config[i]),
+                'timeout': self.board_config[i]['timeout'],
+                'time': - (self.board_config[i]['timeout'] + 1)
+            }
+
+    def init_boards_monitor(self):
+        def callback(msg):
+            if not msg.data in self.boards:
+                self.get_logger().info(f'New board found: -> {msg.data}')
+                self.init_board(msg.data)
+            self.boards[msg.data]['last_active'] = self.get_clock(
+            ).now().nanoseconds * 1e-9
+
         config_file = self.get_parameter(
             'board_config').get_parameter_value().string_value
 
         try:
             with open(config_file, 'r') as jsonfile:
-                config = json.load(jsonfile)
-            for i in range(len(config)):
-                config[i]['type'] = locate(config[i]['type'].replace('/', '.'))
-                assert (config[i]['type'])
+                self.board_config = json.load(jsonfile)
+            for i in range(len(self.board_config)):
+                self.board_config[i]['type'] = locate(
+                    self.board_config[i]['type'].replace('/', '.'))
+                assert (self.board_config[i]['type'])
         except:
             self.get_logger().error(f'Invalid config file: {config_file}')
-            config = []
+            self.board_config = []
 
-        self.subs = {}
-        for i in range(len(config)):
-            self.subs[config[i]['name']] = {
-                'value': config[i]['initial'],
-                'sub': self.generate_subscription(config[i]),
-                'timeout': config[i]['timeout'],
-                'time': - (config[i]['timeout'] + 1)
-            }
+        self.boards = {}
+        self.heartbeat_sub = self.create_subscription(
+            String, '/task_board_heartbeat', callback, 10)
 
     def init_recordings_db(self):
         DB_FILE = './db/recordings.db'
