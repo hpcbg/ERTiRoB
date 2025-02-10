@@ -6,6 +6,7 @@
 #include <rclc/rclc.h>
 #include <rclc/executor.h>
 
+#include <std_msgs/msg/string.h>
 #include <std_msgs/msg/int32.h>
 #include <sensor_msgs/msg/imu.h>
 #include <tf2_msgs/msg/tf_message.h>
@@ -16,11 +17,13 @@
 NetworkManager nm;
 
 
+rcl_publisher_t heartbeat_publisher;
 rcl_publisher_t battery_publisher;
 rcl_publisher_t buttonA_publisher;
 rcl_publisher_t buttonB_publisher;
 rcl_publisher_t imu_publisher;
 rcl_publisher_t tf_publisher;
+std_msgs__msg__String heartbeat_msg;
 std_msgs__msg__Int32 battery_msg;
 std_msgs__msg__Int32 buttonA_msg;
 std_msgs__msg__Int32 buttonB_msg;
@@ -30,6 +33,10 @@ rclc_support_t support;
 rcl_allocator_t allocator;
 rcl_node_t node;
 rcl_timer_t timer;
+
+#define HEARTBEAT_TIMEOUT 10000
+unsigned long last_heartbeat_time = 0;
+char MAC[13];
 
 #define LED_PIN 13
 
@@ -50,8 +57,18 @@ void ros_subscribe() {
   //create init_options
   RCCHECK(rclc_support_init(&support, 0, NULL, &allocator));
 
+  char node_name[24];
+  sprintf(node_name, "task_board_%s\0", MAC);
+
   // create node
-  RCCHECK(rclc_node_init_default(&node, "micro_ros_arduino_wifi_node", "", &support));
+  RCCHECK(rclc_node_init_default(&node, "task_board", node_name, &support));
+
+  // create publisher 1
+  RCCHECK(rclc_publisher_init_default(
+    &heartbeat_publisher,
+    &node,
+    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, String),
+    "/task_board_heartbeat"));
 
   // create publisher 1
   RCCHECK(rclc_publisher_init_default(
@@ -79,7 +96,7 @@ void ros_subscribe() {
     &imu_publisher,
     &node,
     ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Imu),
-    "/imu/data_raw"));
+    "imu/data_raw"));
 
 
   // Initialize IMU message
@@ -87,6 +104,13 @@ void ros_subscribe() {
   imu_msg.header.frame_id.data = (char *)"imu_frame";
   imu_msg.header.frame_id.size = strlen("imu_frame");
   imu_msg.header.frame_id.capacity = imu_msg.header.frame_id.size + 1;
+
+  // Initialize Heartbeat message
+  heartbeat_msg.data.data = (char *)malloc(12 * sizeof(char));
+  heartbeat_msg.data.size = 13;
+  heartbeat_msg.data.capacity = 13;
+  sprintf(heartbeat_msg.data.data, "%s", MAC);
+  heartbeat_msg.data.data[12] = 0;
 }
 
 void ros_publish() {
@@ -123,13 +147,13 @@ void ros_publish() {
   float accel_thresh = 0.05;  // Example threshold for acceleration
   float gyro_thresh = 5;      // Example threshold for gyroscope
 
-  bool accel_changed = (fabs(data.accel.x - last_accel_x) > accel_thresh 
-    || fabs(data.accel.y - last_accel_y) > accel_thresh 
-    || fabs(data.accel.z - last_accel_z) > accel_thresh);
+  bool accel_changed = (fabs(data.accel.x - last_accel_x) > accel_thresh
+                        || fabs(data.accel.y - last_accel_y) > accel_thresh
+                        || fabs(data.accel.z - last_accel_z) > accel_thresh);
 
-  bool gyro_changed = (fabs(data.gyro.x - last_gyro_x) > gyro_thresh 
-    || fabs(data.gyro.y - last_gyro_y) > gyro_thresh 
-    || fabs(data.gyro.z - last_gyro_z) > gyro_thresh);
+  bool gyro_changed = (fabs(data.gyro.x - last_gyro_x) > gyro_thresh
+                       || fabs(data.gyro.y - last_gyro_y) > gyro_thresh
+                       || fabs(data.gyro.z - last_gyro_z) > gyro_thresh);
 
   if (accel_changed || gyro_changed) {
     imu_msg.linear_acceleration.x = data.accel.x;
@@ -149,6 +173,13 @@ void ros_publish() {
     last_gyro_x = data.gyro.x;
     last_gyro_y = data.gyro.y;
     last_gyro_z = data.gyro.z;
+  }
+
+  // Send heartbeat message
+  unsigned long time = millis();
+  if (time - last_heartbeat_time >= HEARTBEAT_TIMEOUT) {
+    last_heartbeat_time = time;
+    RCSOFTCHECK(rcl_publish(&heartbeat_publisher, &heartbeat_msg, NULL));
   }
 }
 
@@ -194,8 +225,12 @@ void setup() {
 
   nm.setup();
 
+  sprintf(MAC, "%012llx\0", ESP.getEfuseMac());
+
   StickCP2.Display.clear();
   M5.Display.println("Connected!");
+  M5.Display.println();
+  M5.Display.println("ID: " + String(MAC));
 
   Serial.println("Connected.");
 
@@ -203,6 +238,7 @@ void setup() {
   Serial.println("[WiFi IP]: " + nm.getLocalIP());
   Serial.println("[ROS Host]: " + nm.getRosHost());
   Serial.println("[ROS Port]: " + String(nm.getRosPort()));
+  Serial.printf("MAC: %s\n", MAC);
 
   ros_subscribe();
 }
