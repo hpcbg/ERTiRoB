@@ -121,18 +121,20 @@ The developed packages provide the following services for fetching the recording
 
 The developed packages provide the following services for fetching the current data of any sensor:
 
-1. `fetch_sensor_names` of type `board_recorder_interfaces/srv/FetchSensorNames` - service for retrieving all of the sensor names.
+1. `/fetch_sensor_names` of type `board_recorder_interfaces/srv/FetchSensorNames` - service for retrieving all of the sensor names.
 
-    - This sevice has no request parameters.
+    - This sevice has a request parameter `string task_board_id` which is the unique id of the task board.
 
     - This service returns `string sensor_names_json` which contains list of all sensor names as a JSON.
 
-    - Sample call: `ros2 service call fetch_sensor_names board_recorder_interfaces/srv/FetchSensorNames "{}"`
+    - Sample call: `ros2 service call /fetch_sensor_names board_recorder_interfaces/srv/FetchSensorNames "{task_board_id: 'e8b4b12f2b14'}"`
 
-2. `fetch_sensor_data` of type `board_recorder_interfaces/srv/FetchSensorData` - service for retrieving the current data of a specific sensor.
+2. `/fetch_sensor_data` of type `board_recorder_interfaces/srv/FetchSensorData` - service for retrieving the current data of a specific sensor.
 
-    - This sevice has a request parameter `string sensor_name` which should contain the name of the requested sensor.
+    - This sevice has the following request parameters:
+        - `string task_board_id` - the unique id of the task board;
+        - `string sensor_name` - the name of the requested sensor.
 
     - This service returns `string data_json` which contains JSON object with the corresponding sensor data.
 
-    - Sample call: `ros2 service call fetch_sensor_data board_recorder_interfaces/srv/FetchSensorData "{sensor_name: 'voltage'}"`
+    - Sample call: `ros2 service call /fetch_sensor_data board_recorder_interfaces/srv/FetchSensorData "{task_board_id: 'e8b4b12f2b14', sensor_name: 'voltage'}"`

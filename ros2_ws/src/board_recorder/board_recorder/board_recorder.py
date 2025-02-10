@@ -137,21 +137,26 @@ class BoardRecorder(Node):
 
         return response
 
-    def fetch_sensor_names_callback(self, _, response):
-        response.sensor_names_json = json.dumps(list(self.subs.keys()))
-        self.get_logger().info(f'Fetch request for the sensor names')
+    def fetch_sensor_names_callback(self, request, response):
+        board_id = request.task_board_id
+        names = list(self.boards[board_id]['subs'].keys()
+                     ) if board_id in self.boards else []
+        response.sensor_names_json = json.dumps(names)
+        self.get_logger().info(
+            f'Fetch request for the sensor names of board {request.task_board_id}')
 
         return response
 
     def fetch_sensor_data_callback(self, request, response):
-        if request.sensor_name in self.subs:
+        if request.task_board_id in self.boards and \
+                request.sensor_name in self.boards[request.task_board_id]['subs']:
             response.data_json = json.dumps(
-                {'data': self.subs[request.sensor_name]['value']})
+                {'data': self.boards[request.task_board_id]['subs'][request.sensor_name]['value']})
         else:
             response.data_json = ""
 
         self.get_logger().info(
-            f'Fetch request for the sensor data of {request.sensor_name}')
+            f'Fetch request for the sensor data of {request.sensor_name} for board {request.task_board_id}')
 
         return response
 
@@ -254,8 +259,7 @@ class BoardRecorder(Node):
                     self.boards[board_id]['subs'][name]['value'] = new
                     self.boards[board_id]['subs'][name]['time'] = time
 
-            self.boards[board_id]['subs']['subscription'] = self.create_subscription(
-                config['type'], f'/task_board_{board_id}/{config['topic']}', listener_callback, 1)
+            return self.create_subscription(config['type'], f'/task_board_{board_id}/{config['topic']}', listener_callback, 1)
 
         self.boards[board_id] = {
             'is_recording': False,
@@ -354,10 +358,10 @@ class BoardRecorder(Node):
             FetchRecordingEvents, '/fetch_recording_events', self.fetch_recording_events_callback)
 
         self._fetch_sensor_names_srv = self.create_service(
-            FetchSensorNames, 'fetch_sensor_names', self.fetch_sensor_names_callback)
+            FetchSensorNames, '/fetch_sensor_names', self.fetch_sensor_names_callback)
 
         self._fetch_sensor_data_srv = self.create_service(
-            FetchSensorData, 'fetch_sensor_data', self.fetch_sensor_data_callback)
+            FetchSensorData, '/fetch_sensor_data', self.fetch_sensor_data_callback)
 
 
 def main(args=None):

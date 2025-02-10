@@ -1,5 +1,6 @@
 # Commands Cheat Sheet 
 
+
 ## Installation & Set-Up
 
 1. Install the latest Ubuntu 24
@@ -44,14 +45,4 @@ ros2 pkg create --build-type ament_python <pkg_name>
 source /opt/ros/jazzy/setup.bash
 source install/local_setup.bash
 ros2 run board_recorder board_recorder
-```
-
-1. Fetch all sensors names
-```
-ros2 service call fetch_sensor_names board_recorder_interfaces/srv/FetchSensorNames "{}"
-```
-
-2. Fetch sensor data
-```
-ros2 service call fetch_sensor_data board_recorder_interfaces/srv/FetchSensorData "{sensor_name: 'voltage'}"
 ```
