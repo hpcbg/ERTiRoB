@@ -35,6 +35,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/FetchRecordingEvents.srv"
   "srv/FetchCurrentRecordingId.srv"
   "srv/FetchTaskBoards.srv"
+  "srv/FetchTaskBoardRecordings.srv"
 )
 
 ament_package()

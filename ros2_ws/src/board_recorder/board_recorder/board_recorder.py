@@ -187,6 +187,47 @@ class BoardRecorder(Node):
 
         return response
 
+    def fetch_task_board_recordings_callback(self, request, response):
+        board_id = request.task_board_id
+
+        recordings = []
+        cur = self.db_con.cursor()
+        rows = cur.execute(
+            'SELECT * FROM recordings WHERE task_board_id = ? ORDER BY start_time ASC', [board_id])
+        rows = rows.fetchall()
+        for row in rows:
+            recording = {
+                'task_board_id': row[0],
+                'id': row[1],
+                'protocol': row[2],
+                'start_time': row[3],
+                'status': row[4],
+                'events': []
+            }
+            events = cur.execute('SELECT time, name, data FROM events \
+                                  WHERE task_board_id = ? AND recording_id = ? \
+                                  ORDER BY time ASC',
+                                 [board_id, row[1]])
+            recording['events'] = list(map(
+                lambda event: {
+                    'time': event[0],
+                    'name': event[1],
+                    'data': event[2]
+                },
+                events.fetchall()))
+
+            recordings.append(recording)
+
+        response.task_board_recordings_json = json.dumps({
+            'task_board_id': board_id,
+            'recordings': recordings
+        })
+
+        self.get_logger().info(
+            f'Fetch request for all recordings from board {board_id}')
+
+        return response
+
     def execute_record_callback(self, goal_handle):
         board_id = goal_handle.request.task_board_id
         protocol = goal_handle.request.protocol
@@ -392,6 +433,9 @@ class BoardRecorder(Node):
 
         self._fetch_task_boards_srv = self.create_service(
             FetchTaskBoards, '/fetch_task_boards', self.fetch_task_boards_callback)
+
+        self._fetch_task_board_recordings_srv = self.create_service(
+            FetchTaskBoardRecordings, '/fetch_task_board_recordings', self.fetch_task_board_recordings_callback)
 
 
 def main(args=None):
