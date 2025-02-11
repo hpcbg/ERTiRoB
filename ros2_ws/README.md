@@ -78,6 +78,16 @@ The developed packages provide the following actions for control of the recordin
 
 ## Services provided by the task board recorder
 
+The developed packages provide the following services for task board management:
+
+1. `/fetch_task_boards` of type `board_recorder_interfaces/srv/FetchTaskBoards` - service for retrieving the list of the task boards.
+
+    - This sevice has no request parameter.
+
+    - This service returns `string task_boards_json` which contains the current list of the task boards as a JSON.
+
+    - Sample call: `ros2 service call /fetch_task_boards board_recorder_interfaces/srv/FetchTaskBoards "{}"`
+
 The developed packages provide the following services for fetching the recordings data:
 
 1. `/fetch_current_recording_id` of type `board_recorder_interfaces/srv/FetchCurrentRecordingId` - service for retrieving the id of the current recording.

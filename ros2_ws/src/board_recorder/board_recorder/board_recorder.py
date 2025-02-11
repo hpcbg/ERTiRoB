@@ -9,7 +9,7 @@ from rclpy.node import Node
 
 from std_msgs.msg import String
 
-from board_recorder_interfaces.srv import FetchCurrentRecordingId, FetchRecording, FetchNewestRecordings, FetchRecordingEvents, FetchSensorNames, FetchSensorData
+from board_recorder_interfaces.srv import *
 from board_recorder_interfaces.action import Record, Stop
 
 
@@ -159,6 +159,31 @@ class BoardRecorder(Node):
 
         self.get_logger().info(
             f'Fetch request for the sensor data of {request.sensor_name} for board {request.task_board_id}')
+
+        return response
+
+    def fetch_task_boards_callback(self, _, response):
+        task_boards = {}
+        cur = self.db_con.cursor()
+        rows = cur.execute('SELECT DISTINCT task_board_id FROM recordings')
+        row = rows.fetchone()
+        while row:
+            task_boards[row[0]] = {
+                'id': row[0],
+                'status': 'Disconnected'
+            }
+            row = rows.fetchone()
+        for board_id in self.boards:
+            if board_id in task_boards:
+                task_boards[board_id]['status'] = 'Connected'
+            else:
+                task_boards[board_id] = {
+                    'id': row[0],
+                    'status': 'Connected'
+                }
+        response.task_boards_json = json.dumps(list(task_boards.values()))
+
+        self.get_logger().info(f'Fetch request for task boards')
 
         return response
 
@@ -364,6 +389,9 @@ class BoardRecorder(Node):
 
         self._fetch_sensor_data_srv = self.create_service(
             FetchSensorData, '/fetch_sensor_data', self.fetch_sensor_data_callback)
+
+        self._fetch_task_boards_srv = self.create_service(
+            FetchTaskBoards, '/fetch_task_boards', self.fetch_task_boards_callback)
 
 
 def main(args=None):
