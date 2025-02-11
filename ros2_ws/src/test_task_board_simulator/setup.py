@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'board_recorder'
+package_name = 'test_task_board_simulator'
 
 setup(
     name=package_name,
@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'board_recorder = board_recorder.board_recorder:main'
+            'test_task_board_simulator = test_task_board_simulator.test_task_board_simulator:main'
         ],
     },
 )
