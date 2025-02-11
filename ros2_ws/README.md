@@ -48,6 +48,18 @@ The `board_recorder_interfaces` package can be compiled with `colcon build --pac
 
 ## Actions provided by the task board recorder
 
+The developed packages provide the following action for task board management:
+
+1. `/remove_task_board` of type `board_recorder_interfaces/action/RemoveTaskBoard` - action for removing all of the task board from the local database.
+
+    - This action requires the parameter `string task_board_id` which is the unique id of the task board.
+
+    - This action will return as a result `bool success` which will be `true` if the data for the provided `task_board_id` were removed successfully.
+
+    - This action will return as a feedback `bool is_authorized`. This field is reserved if some kind of user authentication is implemented in the future.
+
+    - Sample call: `ros2 action send_goal --feedback /remove_task_board board_recorder_interfaces/action/RemoveTaskBoard "{task_board_id: 'e8b4b12f2b14'}"`
+
 The developed packages provide the following actions for control of the recording process:
 
 1. `/record` of type `board_recorder_interfaces/action/Record` - action for starting a new recording.
@@ -62,7 +74,7 @@ The developed packages provide the following actions for control of the recordin
 
     - Note: if the recording was already started the id of the current recording will be returned.
 
-    - Sample call: `ros2 action send_goal --feedback record board_recorder_interfaces/action/Record "{task_board_id: 'e8b4b12f2b14', protocol: 'protocol_name'}"`
+    - Sample call: `ros2 action send_goal --feedback /record board_recorder_interfaces/action/Record "{task_board_id: 'e8b4b12f2b14', protocol: 'protocol_name'}"`
 
 2. `/stop` of type `board_recorder_interfaces/action/Stop` - action for stopping of the corresponding recording.
 
@@ -74,7 +86,7 @@ The developed packages provide the following actions for control of the recordin
 
     - This action will return as a feedback `bool is_authorized`. This field is reserved if some kind of user authentication is implemented in the future.
 
-    - Sample call: `ros2 action send_goal --feedback stop board_recorder_interfaces/action/Stop "{task_board_id: 'e8b4b12f2b14', recording_id: 1739219462}"`
+    - Sample call: `ros2 action send_goal --feedback /stop board_recorder_interfaces/action/Stop "{task_board_id: 'e8b4b12f2b14', recording_id: 1739219462}"`
 
 ## Services provided by the task board recorder
 

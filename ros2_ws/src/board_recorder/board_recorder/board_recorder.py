@@ -10,7 +10,7 @@ from rclpy.node import Node
 from std_msgs.msg import String
 
 from board_recorder_interfaces.srv import *
-from board_recorder_interfaces.action import Record, Stop
+from board_recorder_interfaces.action import *
 
 
 class BoardRecorder(Node):
@@ -178,7 +178,7 @@ class BoardRecorder(Node):
                 task_boards[board_id]['status'] = 'Connected'
             else:
                 task_boards[board_id] = {
-                    'id': row[0],
+                    'id': board_id,
                     'status': 'Connected'
                 }
         response.task_boards_json = json.dumps(list(task_boards.values()))
@@ -300,6 +300,31 @@ class BoardRecorder(Node):
             goal_handle.abort()
         return result
 
+    def execute_remove_task_board_callback(self, goal_handle):
+        board_id = goal_handle.request.task_board_id
+
+        self.get_logger().info(
+            f'Requested removal of task board {board_id} from the local database')
+
+        feedback_msg = RemoveTaskBoard.Feedback()
+        feedback_msg.is_authorized = True
+        goal_handle.publish_feedback(feedback_msg)
+
+        result = RemoveTaskBoard.Result()
+        result.success = True
+        if board_id in self.boards:
+            for sub in self.boards[board_id]['subs'].values():
+                self.destroy_subscription(sub['sub'])
+            del self.boards[board_id]
+        cur = self.db_con.cursor()
+        cur.execute(
+            'DELETE FROM recordings WHERE task_board_id = ?', [board_id])
+        cur.execute(
+            'DELETE FROM events WHERE task_board_id = ?', [board_id])
+        self.db_con.commit()
+        goal_handle.succeed()
+        return result
+
     def init_board(self, board_id):
         def generate_subscription(config):
             def listener_callback(msg):
@@ -411,6 +436,12 @@ class BoardRecorder(Node):
             Stop,
             '/stop',
             self.execute_stop_callback)
+
+        self._remove_task_board_action_server = ActionServer(
+            self,
+            RemoveTaskBoard,
+            '/remove_task_board',
+            self.execute_remove_task_board_callback)
 
     def init_services(self):
         self._fetch_current_recording_id_srv = self.create_service(
