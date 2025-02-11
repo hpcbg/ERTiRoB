@@ -309,7 +309,8 @@ class BoardRecorder(Node):
                 'UPDATE recordings SET status = \'Completed\' WHERE task_board_id = ? AND id = ?',
                 [board_id, recording_id])
             self.db_con.commit()
-            self.is_recording = False
+            if board_id in self.boards:
+                self.boards[board_id]['is_recording'] = False
             goal_handle.succeed()
         else:
             goal_handle.abort()
