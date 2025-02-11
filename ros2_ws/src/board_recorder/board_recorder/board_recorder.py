@@ -228,6 +228,21 @@ class BoardRecorder(Node):
 
         return response
 
+    def fetch_task_board_protocols_callback(self, request, response):
+        board_id = request.task_board_id
+
+        cur = self.db_con.cursor()
+        rows = cur.execute(
+            'SELECT DISTINCT protocol FROM recordings WHERE task_board_id = ? ORDER BY protocol ASC',
+            [board_id])
+        response.task_board_protocols_json = json.dumps(
+            list(map(lambda protocol: protocol[0], rows.fetchall())))
+
+        self.get_logger().info(
+            f'Fetch request for all protocols from board {board_id}')
+
+        return response
+
     def execute_record_callback(self, goal_handle):
         board_id = goal_handle.request.task_board_id
         protocol = goal_handle.request.protocol
@@ -467,6 +482,9 @@ class BoardRecorder(Node):
 
         self._fetch_task_board_recordings_srv = self.create_service(
             FetchTaskBoardRecordings, '/fetch_task_board_recordings', self.fetch_task_board_recordings_callback)
+
+        self._fetch_task_board_protocols_srv = self.create_service(
+            FetchTaskBoardProtocols, '/fetch_task_board_protocols', self.fetch_task_board_protocols_callback)
 
 
 def main(args=None):

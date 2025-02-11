@@ -133,6 +133,14 @@ The developed packages provide the following services for task board management:
 
     - Sample call: `ros2 service call /fetch_task_board_recordings board_recorder_interfaces/srv/FetchTaskBoardRecordings "{task_board_id: 'e8b4b12f2b14'}"`
 
+3. `/fetch_task_board_protocols` of type `board_recorder_interfaces/srv/FetchTaskBoardProtocols` - service for retrieving the id of the current recording.
+
+    - This sevice has a request parameter `string task_board_id` which is the unique id of the task board.
+
+    - This service returns `string task_board_protocols_json` which contains list with all of the recorded protocols for this task board.
+
+    - Sample call: `ros2 service call /fetch_task_board_protocols board_recorder_interfaces/srv/FetchTaskBoardProtocols "{task_board_id: 'e8b4b12f2b14'}"`
+
 ### Fetching recordings data
 
 The developed packages provide the following services for fetching the recordings data:
