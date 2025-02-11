@@ -13,7 +13,7 @@ export default function Header({ children }) {
       <div className={styles.loading}>{fetching > 0 && <progress />}</div>
       <header className={styles.header}>
         <div className={styles.title}>
-          <h1 onClick={() => navigate("/recordings")}>Board Recorder</h1>
+          <h1 onClick={() => navigate("/")}>Board Recorder</h1>
         </div>
         <nav>{children}</nav>
       </header>

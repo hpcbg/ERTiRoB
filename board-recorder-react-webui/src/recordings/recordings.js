@@ -7,6 +7,12 @@ const initialRecordingsState = {
   rosStatus: "connecting...",
   taskBoardId: "",
   data: null,
+  uploaded: {
+    taskBoardId: null,
+    protocols: [],
+    recordings: [],
+    selectedRecording: null,
+  },
 };
 
 const recordingsSlice = createSlice({
@@ -39,6 +45,35 @@ const recordingsSlice = createSlice({
       )
         return;
       state.data.events = state.data.events.concat(action.payload.events);
+    },
+    setUploadedData(state, action) {
+      state.uploaded = {
+        taskBoardId: action.payload.taskBoardId,
+        protocols: [
+          ...new Set(
+            action.payload.recordings.map((recording) => recording.protocol)
+          ),
+        ].sort(),
+        recordings: action.payload.recordings,
+        recordings_index: Object.fromEntries(
+          action.payload.recordings.map((recording, i) => [recording.id, i])
+        ),
+        selectedRecording: null,
+      };
+    },
+    setUploadedSelectedRecording(state, action) {
+      state.uploaded.selectedRecording =
+        state.uploaded.recordings[
+          state.uploaded.recordings_index[action.payload.recordingId]
+        ];
+    },
+    clearUploadedData(state) {
+      state.uploaded = {
+        taskBoardId: null,
+        protocols: [],
+        recordings: [],
+        selectedRecording: null,
+      };
     },
   },
 });

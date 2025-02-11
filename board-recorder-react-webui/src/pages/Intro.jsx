@@ -32,7 +32,7 @@ export default function IntroPage() {
     >
       <div>
         <h2>Welcome to the task board recorder!</h2>
-        <p>Please set the ROS 2 bridge websocket address of your task board:</p>
+        <p>To connect to ROS 2, please set your rosbridge websocket address:</p>
         <p>
           wss://
           <input
@@ -41,11 +41,16 @@ export default function IntroPage() {
             name="websocket"
             value={value}
             onChange={handleChange}
-          />
-        </p>
-        <p>
+          />{" "}
           <Button type="link" style="button" to="/recordings">
-            CONNECT
+            Connect to ROS
+          </Button>
+        </p>
+        <p>or</p>
+        <p>you can browse offline a downloaded task board recorder database</p>
+        <p>
+          <Button type="link" style="button" to="/browser">
+            Open database browser
           </Button>
         </p>
       </div>

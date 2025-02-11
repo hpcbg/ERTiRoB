@@ -1,6 +1,7 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 
+import BrowserPage from "./pages/Browser.jsx";
 import RecordingsPage from "./pages/Recordings.jsx";
 import Root from "./components/Root/Root.jsx";
 import IntroPage from "./pages/Intro.jsx";
@@ -23,6 +24,10 @@ function App() {
         {
           path: "recordings",
           element: <RecordingsPage />,
+        },
+        {
+          path: "browser",
+          element: <BrowserPage />,
         },
       ],
     },
