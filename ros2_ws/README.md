@@ -88,15 +88,16 @@ The developed packages provide the following services for fetching the recording
 
     - Sample call: `ros2 service call /fetch_current_recording_id board_recorder_interfaces/srv/FetchCurrentRecordingId "{task_board_id: 'e8b4b12f2b14'}"`
 
-2. `/fetch_latest_recordings` of type `board_recorder_interfaces/srv/FetchLatestRecordings` - service for retrieving the info of the latest recordings which are stored in the database.
+2. `/fetch_newest_recordings` of type `board_recorder_interfaces/srv/FetchNewestRecordings` - service for retrieving the info of the newest recordings which are stored in the database.
 
     - This sevice has the following request parameters:
         - `string task_board_id` - the unique id of the task board;
+        - `string protocol` - the name of the current protocol for the recordings or leave empty for fetching recordings with any protocol;
         - `int32 count` - for limiting the number of the returned recordings. If this parameter is set to `0` the service will return all recordings.
 
     - This service returns `string recordings_list_json` which contains JSON object with the info of the corresponding recordings.
 
-    - Sample call: `ros2 service call /fetch_latest_recordings board_recorder_interfaces/srv/FetchLatestRecordings "{task_board_id: 'e8b4b12f2b14', count: 10}"`
+    - Sample call: `ros2 service call /fetch_newest_recordings board_recorder_interfaces/srv/FetchNewestRecordings "{task_board_id: 'e8b4b12f2b14', protocol: 'protocol_name', count: 10}"`
 
 3. `/fetch_recording` of type `board_recorder_interfaces/srv/FetchRecording` - service for retrieving a specific recording.
 

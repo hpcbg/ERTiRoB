@@ -9,7 +9,7 @@ from rclpy.node import Node
 
 from std_msgs.msg import String
 
-from board_recorder_interfaces.srv import FetchCurrentRecordingId, FetchRecording, FetchLatestRecordings, FetchRecordingEvents, FetchSensorNames, FetchSensorData
+from board_recorder_interfaces.srv import FetchCurrentRecordingId, FetchRecording, FetchNewestRecordings, FetchRecordingEvents, FetchSensorNames, FetchSensorData
 from board_recorder_interfaces.action import Record, Stop
 
 
@@ -29,14 +29,16 @@ class BoardRecorder(Node):
         self.init_actions()
         self.init_services()
 
-    def fetch_latest_recordings_callback(self, request, response):
+    def fetch_newest_recordings_callback(self, request, response):
         board_id = request.task_board_id
+        protocol = request.protocol
         count = int(request.count)
         recordings = []
         cur = self.db_con.cursor()
-        rows = cur.execute(f'SELECT * FROM recordings WHERE task_board_id = ? \
-              ORDER BY start_time DESC{'' if count == 0 else f' LIMIT {count}'}',
-                           [board_id])
+        rows = cur.execute(f'SELECT * FROM recordings \
+                             WHERE task_board_id = ? {'AND protocol = ? ' if protocol != '' else ''} \
+                             ORDER BY start_time DESC{'' if count == 0 else f' LIMIT {count}'}',
+                           [board_id, protocol] if protocol != '' else [board_id])
         row = rows.fetchone()
         while row:
             recordings.append({
@@ -51,7 +53,7 @@ class BoardRecorder(Node):
         response.recordings_list_json = json.dumps(recordings)
 
         self.get_logger().info(
-            f'Fetch request for latest {count} recordings from board {board_id}')
+            f'Fetch request for newest {count} recordings from board {board_id} with protocol {protocol}')
 
         return response
 
@@ -348,8 +350,8 @@ class BoardRecorder(Node):
         self._fetch_current_recording_id_srv = self.create_service(
             FetchCurrentRecordingId, '/fetch_current_recording_id', self.fetch_current_recording_id_callback)
 
-        self._fetch_latest_recordings_srv = self.create_service(
-            FetchLatestRecordings, '/fetch_latest_recordings', self.fetch_latest_recordings_callback)
+        self._fetch_newest_recordings_srv = self.create_service(
+            FetchNewestRecordings, '/fetch_newest_recordings', self.fetch_newest_recordings_callback)
 
         self._fetch_recording_srv = self.create_service(
             FetchRecording, '/fetch_recording', self.fetch_recording_callback)

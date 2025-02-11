@@ -31,7 +31,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/FetchRecording.srv"
   "srv/FetchSensorData.srv"
   "srv/FetchSensorNames.srv"
-  "srv/FetchLatestRecordings.srv"
+  "srv/FetchNewestRecordings.srv"
   "srv/FetchRecordingEvents.srv"
   "srv/FetchCurrentRecordingId.srv"
 )
