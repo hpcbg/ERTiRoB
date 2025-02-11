@@ -1,11 +1,15 @@
-import { useSelector, useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import ROSLIB from "roslib";
 
 import Button from "../UI/Button";
 import { recordingActions } from "../../recordings/recordings";
 
-export default function RosActions({ rosRef }) {
+export default function RosTaskBoardRecordingManager({ rosRef }) {
+  const [protocol, setProtocol] = useState("protocol_1");
+
+  const taskBoardId = useSelector((state) => state.recordings.taskBoardId);
   const isRecording = useSelector((state) => state.recordings.isRecording);
   const recordingId = useSelector(
     (state) => state.recordings.currentRecordingId
@@ -21,7 +25,8 @@ export default function RosActions({ rosRef }) {
     });
 
     const goal = new ROSLIB.ActionGoal({
-      recording_name: "untitled",
+      task_board_id: taskBoardId,
+      protocol,
     });
 
     action.sendGoal(
@@ -49,6 +54,7 @@ export default function RosActions({ rosRef }) {
     });
 
     const goal = new ROSLIB.ActionGoal({
+      task_board_id: taskBoardId,
       recording_id: recordingId,
     });
 
@@ -63,12 +69,61 @@ export default function RosActions({ rosRef }) {
     );
   }
 
+  function fetchCurrentRecordingId() {
+    const service = new ROSLIB.Service({
+      ros: rosRef.current,
+      name: "fetch_current_recording_id",
+      serviceType: "board_recorder_interfaces/srv/FetchCurrentRecordingId",
+    });
+
+    service.callService(
+      { task_board_id: taskBoardId },
+      (response) => {
+        if (response.recording_id >= 0) {
+          dispatch(
+            recordingActions.record({
+              recording_id: response.recording_id,
+            })
+          );
+        } else {
+          dispatch(recordingActions.stop());
+        }
+        console.log(response);
+      },
+      (error) => console.log(error)
+    );
+  }
+
+  useEffect(() => {
+    fetchCurrentRecordingId();
+    const fetchCurrentRecordingIdInterval = setInterval(
+      fetchCurrentRecordingId,
+      10000
+    );
+
+    return () => {
+      clearInterval(fetchCurrentRecordingIdInterval);
+    };
+  }, [taskBoardId]);
+
   return (
     <div>
       {!isRecording ? (
-        <Button type="button" style="button" onClick={record}>
-          Record
-        </Button>
+        <>
+          <label>
+            Protocol:{" "}
+            <input
+              type="text"
+              placeholder="protocol_1"
+              name="protocol"
+              value={protocol}
+              onChange={(e) => setProtocol(e.target.value)}
+            />
+          </label>{" "}
+          <Button type="button" style="button" onClick={record}>
+            Record
+          </Button>
+        </>
       ) : (
         <>
           Current recording ID: {recordingId}{" "}

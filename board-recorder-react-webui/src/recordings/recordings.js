@@ -5,6 +5,7 @@ const initialRecordingsState = {
   currentRecordingId: null,
   lastRecordingId: null,
   rosStatus: "connecting...",
+  taskBoardId: "",
   data: null,
 };
 
@@ -23,6 +24,9 @@ const recordingsSlice = createSlice({
     },
     setRosStatus(state, action) {
       state.rosStatus = action.payload.status;
+    },
+    setTaskBoardId(state, action) {
+      state.taskBoardId = action.payload.taskBoardId;
     },
     setData(state, action) {
       state.data = action.payload.data;
