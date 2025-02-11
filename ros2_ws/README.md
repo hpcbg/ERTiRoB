@@ -1,3 +1,4 @@
+<!-- omit in toc -->
 # ROS 2 Task Board Recorder
 
 This part of the repo contains all the packages of the develop ROS 2 system for communication and recording of the task board sensor events published by the task board to ROS 2 topics.
@@ -8,6 +9,20 @@ Packages are developed and running for ROS 2 Jazzy for Ubuntu 24.04.1 LTS.
 
 Note: the current task board recorder node records only events when a new (different) value is published to the corresponding topic.
 
+<!-- omit in toc -->
+## Contents
+
+- [Installation](#installation)
+- [Task board configuration](#task-board-configuration)
+- [Launch](#launch)
+- [Additional packages compilation or rebuild](#additional-packages-compilation-or-rebuild)
+- [Actions provided by the task board recorder](#actions-provided-by-the-task-board-recorder)
+  - [Task board management](#task-board-management)
+  - [Recordings control](#recordings-control)
+- [Services provided by the task board recorder](#services-provided-by-the-task-board-recorder)
+  - [Task board management](#task-board-management-1)
+  - [Fetching recordings data](#fetching-recordings-data)
+  - [Fetching task board sensors data](#fetching-task-board-sensors-data)
 
 ## Installation
 
@@ -48,6 +63,10 @@ The `board_recorder_interfaces` package can be compiled with `colcon build --pac
 
 ## Actions provided by the task board recorder
 
+There actions for task board manaagement and for recordings control.
+
+### Task board management
+
 The developed packages provide the following action for task board management:
 
 1. `/remove_task_board` of type `board_recorder_interfaces/action/RemoveTaskBoard` - action for removing all of the task board from the local database.
@@ -59,6 +78,8 @@ The developed packages provide the following action for task board management:
     - This action will return as a feedback `bool is_authorized`. This field is reserved if some kind of user authentication is implemented in the future.
 
     - Sample call: `ros2 action send_goal --feedback /remove_task_board board_recorder_interfaces/action/RemoveTaskBoard "{task_board_id: 'e8b4b12f2b14'}"`
+
+### Recordings control
 
 The developed packages provide the following actions for control of the recording process:
 
@@ -90,6 +111,10 @@ The developed packages provide the following actions for control of the recordin
 
 ## Services provided by the task board recorder
 
+There are services for task board management, fetching recordings data and fetching task board sensors data.
+
+### Task board management
+
 The developed packages provide the following services for task board management:
 
 1. `/fetch_task_boards` of type `board_recorder_interfaces/srv/FetchTaskBoards` - service for retrieving the list of the task boards.
@@ -107,6 +132,8 @@ The developed packages provide the following services for task board management:
     - This service returns `string task_board_recordings_json` which contains the id of the task board and all recordings for this task board.
 
     - Sample call: `ros2 service call /fetch_task_board_recordings board_recorder_interfaces/srv/FetchTaskBoardRecordings "{task_board_id: 'e8b4b12f2b14'}"`
+
+### Fetching recordings data
 
 The developed packages provide the following services for fetching the recordings data:
 
@@ -149,6 +176,8 @@ The developed packages provide the following services for fetching the recording
     - This service returns `string events_json` which contains JSON object with the requested events.
 
     - Sample call: `ros2 service call /fetch_recording_events board_recorder_interfaces/srv/FetchRecordingEvents "{task_board_id: 'e8b4b12f2b14', recording_id: 1739220569, from_time: 5}"`
+
+### Fetching task board sensors data
 
 The developed packages provide the following services for fetching the current data of any sensor:
 
