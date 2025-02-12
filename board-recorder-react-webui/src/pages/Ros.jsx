@@ -10,13 +10,13 @@ import RosTaskBoards from "../components/ROS/RosTaskBoards.jsx";
 import RosStatus from "../components/ROS/RosStatus.jsx";
 import RosConnect from "../components/ROS/RosConnect.jsx";
 
-import { recordingActions } from "../recordings/recordings";
+import { recordingActions } from "../recordings/recordings.js";
 
-import styles from "./Recordings.module.css";
+import styles from "./Ros.module.css";
 
 import { getRosBridgeAddress } from "../query_utils/auth.js";
 
-export default function Recordings() {
+export default function Ros() {
   const dispatch = useDispatch();
 
   const rosRef = useRef(new ROSLIB.Ros());

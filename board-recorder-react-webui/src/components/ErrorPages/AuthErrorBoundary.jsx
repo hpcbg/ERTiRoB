@@ -11,7 +11,7 @@ export default function AuthErrorBoundary() {
   return (
     <Modal
       onClose={() => {
-        navigate("/recordings");
+        navigate("/");
         return true;
       }}
     >
@@ -23,7 +23,7 @@ export default function AuthErrorBoundary() {
             : "Connection failed! Please, try again later."
         }
       />
-      <Button type="link" style="button" to="/recordings">
+      <Button type="link" style="button" to="/">
         Dismiss
       </Button>
     </Modal>

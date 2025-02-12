@@ -42,7 +42,7 @@ export default function IntroPage() {
             value={value}
             onChange={handleChange}
           />{" "}
-          <Button type="link" style="button" to="/recordings">
+          <Button type="link" style="button" to="/ros">
             Connect to ROS
           </Button>
         </p>
