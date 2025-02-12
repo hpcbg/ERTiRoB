@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 
+import ErrorBlock from "../UI/ErrorBlock";
+
 import { recordingActions } from "../../recordings/recordings";
 
 export default function FileUploader() {
@@ -46,7 +48,6 @@ export default function FileUploader() {
             Select task board database JSON file:{" "}
             <input type="file" accept=".json" onChange={handleFileChange} />
           </p>
-          {error != "" && <p>Error: {error}</p>}
         </>
       )}
       {jsonData && (
@@ -61,6 +62,9 @@ export default function FileUploader() {
           >
             Clear
           </button>
+          {error != "" && (
+            <ErrorBlock title="Error loading JSON" message={error}></ErrorBlock>
+          )}
         </p>
       )}
     </div>

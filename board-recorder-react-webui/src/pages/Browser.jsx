@@ -16,6 +16,7 @@ export default function Browser() {
   const recording = useSelector(
     (state) => state.recordings.uploaded.selectedRecording
   );
+
   return (
     <>
       <Outlet />
