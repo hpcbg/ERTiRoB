@@ -6,16 +6,16 @@ export default function Recording({ recording }) {
   return (
     <div>
       <p>
-        <strong>Recording Details</strong>
+        <strong>Recording details</strong>
       </p>
       <table>
         <tbody>
           <tr>
-            <td>Recording id:</td>
+            <td>Recording ID:</td>
             <td>{recording.id}</td>
           </tr>
           <tr>
-            <td>Task board id:</td>
+            <td>Task board ID:</td>
             <td>{recording.task_board_id}</td>
           </tr>
           <tr>

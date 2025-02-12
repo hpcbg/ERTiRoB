@@ -30,7 +30,7 @@ export default function Header({ children }) {
               Cancel
             </Button>
             <Button type="button" style="text" onClick={() => navigate("/")}>
-              Go to Home
+              Go to home
             </Button>
           </FormActions>
         </Modal>

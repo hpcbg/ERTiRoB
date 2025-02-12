@@ -33,7 +33,7 @@ export default function RecordingSelector() {
       <table>
         <tbody>
           <tr>
-            <td>Task Board ID:</td>
+            <td>Task board ID:</td>
             <td>{taskBoardId}</td>
           </tr>
           <tr>

@@ -42,7 +42,7 @@ export default function RosTaskBoards({ rosRef }) {
       <div>
         <p>
           <Button type="button" style="button" onClick={fetchTaskBoards}>
-            Refresh Task Boards
+            Refresh task boards
           </Button>
           {" Task board: "}
           <select

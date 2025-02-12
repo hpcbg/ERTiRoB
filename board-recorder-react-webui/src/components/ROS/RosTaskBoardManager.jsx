@@ -83,7 +83,7 @@ export default function RosTaskBoardManager({ rosRef }) {
               Cancel
             </Button>
             <Button type="button" style="text" onClick={removeTaskBoard}>
-              Confirm Removal
+              Confirm removal
             </Button>
           </FormActions>
         </Modal>

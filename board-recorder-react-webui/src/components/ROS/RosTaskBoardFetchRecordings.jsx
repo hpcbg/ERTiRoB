@@ -181,7 +181,7 @@ export default function RosTaskBoardFetchRecordings({ rosRef }) {
         </select>
       </p>
       <p>
-        Recording id:{" "}
+        Recording ID:{" "}
         <input
           type="text"
           placeholder="1"
@@ -204,7 +204,7 @@ export default function RosTaskBoardFetchRecordings({ rosRef }) {
       </p>
       <p>
         <Button type="button" style="button" onClick={fetchRecording}>
-          Load Recording
+          Load recording
         </Button>
         <label>
           <input
