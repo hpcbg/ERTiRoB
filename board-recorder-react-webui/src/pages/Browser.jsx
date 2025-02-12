@@ -9,7 +9,7 @@ import Recording from "../components/Recording/Recording.jsx";
 
 import { recordingActions } from "../recordings/recordings.js";
 
-import styles from "./Recordings.module.css";
+import styles from "./Browser.module.css";
 
 export default function Browser() {
   const taskBoardId = useSelector(
