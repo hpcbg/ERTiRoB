@@ -21,9 +21,8 @@ export default function Ros() {
 
   const rosRef = useRef(new ROSLIB.Ros());
 
-  console.log(getRosBridgeAddress());
   rosRef.current.on("error", function (error) {
-    console.log("???", error);
+    console.log("ROS connection error", error);
     setRosError("ERROR: Cannot connect!");
     setRosStatus("CLOSED");
   });

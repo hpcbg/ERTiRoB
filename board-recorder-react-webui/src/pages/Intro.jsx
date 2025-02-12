@@ -13,7 +13,6 @@ import introImage from "../assets/intro.jpg";
 import styles from "./Intro.module.css";
 
 export default function IntroPage() {
-  console.log(useRouteLoaderData("root"));
   const [value, setValue] = useState(getRosBridgeAddress());
   function handleChange(e) {
     setValue(e.target.value);
