@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { recordingActions } from "../../recordings/recordings";
@@ -28,12 +28,14 @@ export default function RecordingSelector() {
     );
   }
 
+  useEffect(() => handleProtocolChange(""), []);
+
   return (
     <div>
       <table>
         <tbody>
           <tr>
-            <td>Task board ID:</td>
+            <td>Task board:</td>
             <td>{taskBoardId}</td>
           </tr>
           <tr>
