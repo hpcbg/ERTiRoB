@@ -1,26 +1,28 @@
 import { Outlet } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 
 import ROSLIB from "roslib";
 
 import Header from "../components/UI/Header.jsx";
 
+import RosTaskBoards from "../components/ROS/RosTaskBoards.jsx";
 import RosStatus from "../components/ROS/RosStatus.jsx";
 import RosConnect from "../components/ROS/RosConnect.jsx";
-import RosActions from "../components/ROS/RosActions.jsx";
-import RosServices from "../components/ROS/RosServices.jsx";
-import Recording from "../components/Recording/Recording.jsx";
 
-import styles from "./Recordings.module.css";
+import { recordingActions } from "../recordings/recordings.js";
+
+import styles from "./Ros.module.css";
 
 import { getRosBridgeAddress } from "../query_utils/auth.js";
 
-export default function Recordings() {
+export default function Ros() {
+  const dispatch = useDispatch();
+
   const rosRef = useRef(new ROSLIB.Ros());
 
-  console.log(getRosBridgeAddress());
   rosRef.current.on("error", function (error) {
-    console.log("???", error);
+    console.log("ROS connection error", error);
     setRosError("ERROR: Cannot connect!");
     setRosStatus("CLOSED");
   });
@@ -34,6 +36,8 @@ export default function Recordings() {
   rosRef.current.on("close", function () {
     console.log("Connection closed");
     setRosStatus("CLOSED");
+    dispatch(recordingActions.setTaskBoardId({ taskBoardId: "" }));
+    dispatch(recordingActions.setData({ data: null }));
   });
 
   const [rosStatus, setRosStatus] = useState("CLOSED");
@@ -55,6 +59,7 @@ export default function Recordings() {
       rosRef.current.close();
     } catch (error) {}
   }
+
   useEffect(() => {
     connect();
     return () => close();
@@ -79,15 +84,7 @@ export default function Recordings() {
               rosError={rosError}
             ></RosConnect>
           )}
-          {rosStatus == "OK" && (
-            <>
-              <RosActions rosRef={rosRef}></RosActions>
-              <hr />
-              <RosServices rosRef={rosRef}></RosServices>
-              <hr />
-              <Recording></Recording>
-            </>
-          )}
+          {rosStatus == "OK" && <RosTaskBoards rosRef={rosRef}></RosTaskBoards>}
         </div>
       </main>
     </>

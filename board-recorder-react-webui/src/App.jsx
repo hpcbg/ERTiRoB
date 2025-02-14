@@ -1,7 +1,8 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 
-import RecordingsPage from "./pages/Recordings.jsx";
+import BrowserPage from "./pages/Browser.jsx";
+import RosPage from "./pages/Ros.jsx";
 import Root from "./components/Root/Root.jsx";
 import IntroPage from "./pages/Intro.jsx";
 import NotFoundBoundary from "./components/ErrorPages/NotFoundBoundary.jsx";
@@ -21,8 +22,12 @@ function App() {
         { index: true, element: <IntroPage /> },
         { path: "intro", element: <IntroPage /> },
         {
-          path: "recordings",
-          element: <RecordingsPage />,
+          path: "ros",
+          element: <RosPage />,
+        },
+        {
+          path: "browser",
+          element: <BrowserPage />,
         },
       ],
     },

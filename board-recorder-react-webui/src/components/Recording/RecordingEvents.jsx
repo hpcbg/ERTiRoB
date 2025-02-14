@@ -9,15 +9,15 @@ export default function RecordingEvents({ children }) {
     <table className={styles.table}>
       <thead>
         <tr>
-          <th>Time</th>
           <th>Name</th>
+          <th>Time [s]</th>
           <th>Value</th>
         </tr>
       </thead>
       <tbody>
         {children.map((event, i) => (
           <RecordingEvent key={`event_${i}`}>
-            {[formatTime(event.time), event.name, event.data]}
+            {[event.name, formatTime(event.time), event.data]}
           </RecordingEvent>
         ))}
       </tbody>

@@ -1,5 +1,5 @@
 export function formatTime(time) {
-  return `${Math.round(time)} s`;
+  return `${Math.round(time)}`;
 }
 
 export function formatUnixTimestamp(timestamp) {

@@ -1,32 +1,50 @@
-import { useSelector } from "react-redux";
-
 import RecordingEvents from "./RecordingEvents";
 
 import { formatUnixTimestamp } from "../../utils/formatters";
 
-export default function Recording() {
-  const recording = useSelector((state) => state.recordings.data);
-
+export default function Recording({ recording }) {
   return (
-    <>
-      {recording && (
-        <div>
-          <p>
-            <strong>Recording Details</strong>
-          </p>
-          <p>Recording id: {recording.id}</p>
+    <div>
+      <p>
+        <strong>Recording details</strong>
+      </p>
+      <table>
+        <tbody>
+          <tr>
+            <td>Recording ID:</td>
+            <td>{recording.id}</td>
+          </tr>
+          <tr>
+            <td>Task board ID:</td>
+            <td>{recording.task_board_id}</td>
+          </tr>
+          <tr>
+            <td>Recording status:</td>
+            <td>{recording.status}</td>
+          </tr>
           {recording.status != "Not Found" && (
-            <p>Recording time: {formatUnixTimestamp(recording.start_time)}</p>
+            <tr>
+              <td>Recording time:</td>
+              <td>{formatUnixTimestamp(recording.start_time)}</td>
+            </tr>
           )}
           {recording.status != "Not Found" && (
-            <p>Recording name: {recording.name}</p>
+            <tr>
+              <td>Protocol:</td>
+              <td>{recording.protocol}</td>
+            </tr>
           )}
-          <p>Recording status: {recording.status}</p>
+
           {recording.status != "Not Found" && (
-            <RecordingEvents>{recording.events}</RecordingEvents>
+            <tr>
+              <td style={{ verticalAlign: "top" }}>Events:</td>
+              <td>
+                <RecordingEvents>{recording.events}</RecordingEvents>
+              </td>
+            </tr>
           )}
-        </div>
-      )}
-    </>
+        </tbody>
+      </table>
+    </div>
   );
 }

@@ -16,7 +16,7 @@ export default function NotFoundBoundary() {
     >
       <ErrorBlock title="An error occured!" message={"Page not found!"} />
       <Button type="link" style="button" to="/">
-        Go to Home
+        Go to home
       </Button>
     </Modal>
   );
