@@ -2,21 +2,21 @@
   {
     "name": "button_A",
     "type": "std_msgs/msg/Int32",
-    "topic": "/button/A_status",
+    "topic": "button/A_status",
     "initial": -1,
     "timeout": 0
   },
   {
     "name": "button_B",
     "type": "std_msgs/msg/Int32",
-    "topic": "/button/B_status",
+    "topic": "button/B_status",
     "initial": -1,
     "timeout": 0
   },
   {
     "name": "voltage",
     "type": "std_msgs/msg/Int32",
-    "topic": "/battery/voltage",
+    "topic": "battery/voltage",
     "initial": -1,
     "timeout": 10000
   }

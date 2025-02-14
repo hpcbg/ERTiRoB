@@ -1,3 +1,5 @@
+string task_board_id
+string protocol
 int32 count
 ---
 string recordings_list_json

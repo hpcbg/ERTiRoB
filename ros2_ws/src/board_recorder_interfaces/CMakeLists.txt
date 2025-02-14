@@ -28,12 +28,16 @@ find_package(rosidl_default_generators REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "action/Record.action"
   "action/Stop.action"
+  "action/RemoveTaskBoard.action"
   "srv/FetchRecording.srv"
   "srv/FetchSensorData.srv"
   "srv/FetchSensorNames.srv"
-  "srv/FetchLatestRecordings.srv"
+  "srv/FetchNewestRecordings.srv"
   "srv/FetchRecordingEvents.srv"
   "srv/FetchCurrentRecordingId.srv"
+  "srv/FetchTaskBoards.srv"
+  "srv/FetchTaskBoardRecordings.srv"
+  "srv/FetchTaskBoardProtocols.srv"
 )
 
 ament_package()

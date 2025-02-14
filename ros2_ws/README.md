@@ -1,3 +1,4 @@
+<!-- omit in toc -->
 # ROS 2 Task Board Recorder
 
 This part of the repo contains all the packages of the develop ROS 2 system for communication and recording of the task board sensor events published by the task board to ROS 2 topics.
@@ -8,6 +9,20 @@ Packages are developed and running for ROS 2 Jazzy for Ubuntu 24.04.1 LTS.
 
 Note: the current task board recorder node records only events when a new (different) value is published to the corresponding topic.
 
+<!-- omit in toc -->
+## Contents
+
+- [Installation](#installation)
+- [Task board configuration](#task-board-configuration)
+- [Launch](#launch)
+- [Additional packages compilation or rebuild](#additional-packages-compilation-or-rebuild)
+- [Actions provided by the task board recorder](#actions-provided-by-the-task-board-recorder)
+  - [Task board management](#task-board-management)
+  - [Recordings control](#recordings-control)
+- [Services provided by the task board recorder](#services-provided-by-the-task-board-recorder)
+  - [Task board management](#task-board-management-1)
+  - [Fetching recordings data](#fetching-recordings-data)
+  - [Fetching task board sensors data](#fetching-task-board-sensors-data)
 
 ## Installation
 
@@ -26,7 +41,7 @@ Each configuration file should contain a list of JSON objects for each task boar
 
 |name|value|sample value|
 |-|-|-|
-|`name`|String with the name of the sensor. It is not supposed to contain any whitespace characters.|"button_A"|
+|`name`|String with the name of the sensor. It is not supposed to contain any whitespace characters.|`"button_A"`|
 |`type`|String with a ROS 2 type.|`"std_msgs/msg/Int32"`|
 |`topic`|String with a ROS 2 topic.|`"/button/A_status"`|
 |`initial`|The initial value of the sensor.|`-1`|
@@ -48,11 +63,31 @@ The `board_recorder_interfaces` package can be compiled with `colcon build --pac
 
 ## Actions provided by the task board recorder
 
+There actions for task board manaagement and for recordings control.
+
+### Task board management
+
+The developed packages provide the following action for task board management:
+
+1. `/remove_task_board` of type `board_recorder_interfaces/action/RemoveTaskBoard` - action for removing all of the task board from the local database.
+
+    - This action requires the parameter `string task_board_id` which is the unique id of the task board.
+
+    - This action will return as a result `bool success` which will be `true` if the data for the provided `task_board_id` were removed successfully.
+
+    - This action will return as a feedback `bool is_authorized`. This field is reserved if some kind of user authentication is implemented in the future.
+
+    - Sample call: `ros2 action send_goal --feedback /remove_task_board board_recorder_interfaces/action/RemoveTaskBoard "{task_board_id: 'e8b4b12f2b14'}"`
+
+### Recordings control
+
 The developed packages provide the following actions for control of the recording process:
 
-1. `record` of type `board_recorder_interfaces/action/Record` - action for starting a new recording.
+1. `/record` of type `board_recorder_interfaces/action/Record` - action for starting a new recording.
 
-    - This action requires the parameter `string recording_name` which is used for definining the name of the recording.
+    - This action requires the following parameters:
+        - `string task_board_id` - the unique id of the task board;
+        - `string protocol` - the name of the current protocol executed by the robot.
 
     - This action will return as a result `int32 recording_id` which will be the id of the started recording.
 
@@ -60,70 +95,114 @@ The developed packages provide the following actions for control of the recordin
 
     - Note: if the recording was already started the id of the current recording will be returned.
 
-    - Sample call: `ros2 action send_goal --feedback record board_recorder_interfaces/action/Record "{recording_name: 'name'}"`
+    - Sample call: `ros2 action send_goal --feedback /record board_recorder_interfaces/action/Record "{task_board_id: 'e8b4b12f2b14', protocol: 'protocol_name'}"`
 
-2. `stop` of type `board_recorder_interfaces/action/Stop` - action for stopping of the corresponding recording.
+2. `/stop` of type `board_recorder_interfaces/action/Stop` - action for stopping of the corresponding recording.
 
-    - This action requires the parameter `int32 recording_id` which is used for checking if the stop action is requested for the current recording.
+    - This action requires the parameters:
+        - `string task_board_id` - the unique id of the task board;
+        - `int32 recording_id` - this should be the id of the current recording.
 
     - This action will return as a result `bool success` which will be `true` if the provided `recording_id` is equal to the current recording id.
 
-    - This action will return as a feedback `bool is_authorized` which will be `false` if the `recording_id` is wrong. This field is reserved if some kind of user authentication is implemented in the future.
+    - This action will return as a feedback `bool is_authorized`. This field is reserved if some kind of user authentication is implemented in the future.
 
-    - Sample call: `ros2 action send_goal --feedback stop board_recorder_interfaces/action/Stop "{recording_id: 1}"`
+    - Sample call: `ros2 action send_goal --feedback /stop board_recorder_interfaces/action/Stop "{task_board_id: 'e8b4b12f2b14', recording_id: 1739219462}"`
 
 ## Services provided by the task board recorder
 
+There are services for task board management, fetching recordings data and fetching task board sensors data.
+
+### Task board management
+
+The developed packages provide the following services for task board management:
+
+1. `/fetch_task_boards` of type `board_recorder_interfaces/srv/FetchTaskBoards` - service for retrieving the list of the task boards.
+
+    - This sevice has no request parameter.
+
+    - This service returns `string task_boards_json` which contains the current list of the task boards as a JSON.
+
+    - Sample call: `ros2 service call /fetch_task_boards board_recorder_interfaces/srv/FetchTaskBoards "{}"`
+
+2. `/fetch_task_board_recordings` of type `board_recorder_interfaces/srv/FetchTaskBoardRecordings` - service for retrieving the id of the current recording.
+
+    - This sevice has a request parameter `string task_board_id` which is the unique id of the task board.
+
+    - This service returns `string task_board_recordings_json` which contains the id of the task board and all recordings for this task board.
+
+    - Sample call: `ros2 service call /fetch_task_board_recordings board_recorder_interfaces/srv/FetchTaskBoardRecordings "{task_board_id: 'e8b4b12f2b14'}"`
+
+3. `/fetch_task_board_protocols` of type `board_recorder_interfaces/srv/FetchTaskBoardProtocols` - service for retrieving the id of the current recording.
+
+    - This sevice has a request parameter `string task_board_id` which is the unique id of the task board.
+
+    - This service returns `string task_board_protocols_json` which contains list with all of the recorded protocols for this task board.
+
+    - Sample call: `ros2 service call /fetch_task_board_protocols board_recorder_interfaces/srv/FetchTaskBoardProtocols "{task_board_id: 'e8b4b12f2b14'}"`
+
+### Fetching recordings data
+
 The developed packages provide the following services for fetching the recordings data:
 
-1. `fetch_current_recording_id` of type `board_recorder_interfaces/srv/FetchCurrentRecordingId` - service for retrieving the id of the current recording.
+1. `/fetch_current_recording_id` of type `board_recorder_interfaces/srv/FetchCurrentRecordingId` - service for retrieving the id of the current recording.
 
-    - This sevice has no request parameters
+    - This sevice has a request parameter `string task_board_id` which is the unique id of the task board.
 
     - This service returns `int32 recording_id` which contains the id of the current recording. Value of `-1` will be returned if there is no active recording.
 
-    - Sample call: `ros2 service call fetch_current_recording_id board_recorder_interfaces/srv/FetchCurrentRecordingId "{}"`
+    - Sample call: `ros2 service call /fetch_current_recording_id board_recorder_interfaces/srv/FetchCurrentRecordingId "{task_board_id: 'e8b4b12f2b14'}"`
 
-2. `fetch_latest_recordings` of type `board_recorder_interfaces/srv/FetchLatestRecordings` - service for retrieving the info of the latest recordings which are stored in the database.
+2. `/fetch_newest_recordings` of type `board_recorder_interfaces/srv/FetchNewestRecordings` - service for retrieving the info of the newest recordings which are stored in the database.
 
-    - This sevice has a request parameter `int32 count` which is limiting the number of the returned recordings. If this parameter is set to `0` the service will return all recordings.
+    - This sevice has the following request parameters:
+        - `string task_board_id` - the unique id of the task board;
+        - `string protocol` - the name of the current protocol for the recordings or leave empty for fetching recordings with any protocol;
+        - `int32 count` - for limiting the number of the returned recordings. If this parameter is set to `0` the service will return all recordings.
 
     - This service returns `string recordings_list_json` which contains JSON object with the info of the corresponding recordings.
 
-    - Sample call: `ros2 service call fetch_latest_recordings board_recorder_interfaces/srv/FetchLatestRecordings "{count: 10}"`
+    - Sample call: `ros2 service call /fetch_newest_recordings board_recorder_interfaces/srv/FetchNewestRecordings "{task_board_id: 'e8b4b12f2b14', protocol: 'protocol_name', count: 10}"`
 
-3. `fetch_recording` of type `board_recorder_interfaces/srv/FetchRecording` - service for retrieving a specific recording.
+3. `/fetch_recording` of type `board_recorder_interfaces/srv/FetchRecording` - service for retrieving a specific recording.
 
-    - This sevice has a request parameter `int32 recording_id` which is the id of the requested recording.
+    - This sevice has the following request parameters:
+        - `string task_board_id` - the unique id of the task board;
+        - `int32 recording_id` which is the id of the requested recording.
 
     - This service returns `string recording_json` which contains JSON object with the requested recording.
 
-    - Sample call: `ros2 service call fetch_recording board_recorder_interfaces/srv/FetchRecording "{recording_id: 1}"`
+    - Sample call: `ros2 service call /fetch_recording board_recorder_interfaces/srv/FetchRecording "{task_board_id: 'e8b4b12f2b14', recording_id: 1739220569}"`
 
-4. `fetch_recording_events` of type `board_recorder_interfaces/srv/FetchRecordingEvents` - service for retrieving only specific events from a specific recording.
+4. `/fetch_recording_events` of type `board_recorder_interfaces/srv/FetchRecordingEvents` - service for retrieving only specific events from a specific recording.
 
     - This sevice has two request parameters:
-        -  `int32 recording_id` which is the id of the requested recording.
-        -  `float32 from_time` which is the time in seconds from which the events are requested. Note: the time interval is inclusive.
+        - `string task_board_id` - the unique id of the task board;
+        - `int32 recording_id` which is the id of the requested recording;
+        - `float32 from_time` which is the time in seconds from which the events are requested. Note: the time interval is inclusive.
 
     - This service returns `string events_json` which contains JSON object with the requested events.
 
-    - Sample call: `ros2 service call fetch_recording_events board_recorder_interfaces/srv/FetchRecordingEvents "{recording_id: 1, from_time: 5}"`
+    - Sample call: `ros2 service call /fetch_recording_events board_recorder_interfaces/srv/FetchRecordingEvents "{task_board_id: 'e8b4b12f2b14', recording_id: 1739220569, from_time: 5}"`
+
+### Fetching task board sensors data
 
 The developed packages provide the following services for fetching the current data of any sensor:
 
-1. `fetch_sensor_names` of type `board_recorder_interfaces/srv/FetchSensorNames` - service for retrieving all of the sensor names.
+1. `/fetch_sensor_names` of type `board_recorder_interfaces/srv/FetchSensorNames` - service for retrieving all of the sensor names.
 
-    - This sevice has no request parameters.
+    - This sevice has a request parameter `string task_board_id` which is the unique id of the task board.
 
     - This service returns `string sensor_names_json` which contains list of all sensor names as a JSON.
 
-    - Sample call: `ros2 service call fetch_sensor_names board_recorder_interfaces/srv/FetchSensorNames "{}"`
+    - Sample call: `ros2 service call /fetch_sensor_names board_recorder_interfaces/srv/FetchSensorNames "{task_board_id: 'e8b4b12f2b14'}"`
 
-2. `fetch_sensor_data` of type `board_recorder_interfaces/srv/FetchSensorData` - service for retrieving the current data of a specific sensor.
+2. `/fetch_sensor_data` of type `board_recorder_interfaces/srv/FetchSensorData` - service for retrieving the current data of a specific sensor.
 
-    - This sevice has a request parameter `string sensor_name` which should contain the name of the requested sensor.
+    - This sevice has the following request parameters:
+        - `string task_board_id` - the unique id of the task board;
+        - `string sensor_name` - the name of the requested sensor.
 
     - This service returns `string data_json` which contains JSON object with the corresponding sensor data.
 
-    - Sample call: `ros2 service call fetch_sensor_data board_recorder_interfaces/srv/FetchSensorData "{sensor_name: 'voltage'}"`
+    - Sample call: `ros2 service call /fetch_sensor_data board_recorder_interfaces/srv/FetchSensorData "{task_board_id: 'e8b4b12f2b14', sensor_name: 'voltage'}"`
