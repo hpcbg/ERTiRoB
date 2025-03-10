@@ -4,6 +4,7 @@
     "type": "std_msgs/msg/Int32",
     "topic": "voltage",
     "initial": -1,
+    "deadzone": 50,
     "timeout": 10000
   },
   {
@@ -11,6 +12,7 @@
     "type": "std_msgs/msg/Int32",
     "topic": "buttonPushState",
     "initial": -1,
+    "deadzone": 0,
     "timeout": 0
   },
   {
@@ -18,6 +20,7 @@
     "type": "std_msgs/msg/Int32",
     "topic": "stopBtnState",
     "initial": -1,
+    "deadzone": 0,
     "timeout": 0
   },
   {
@@ -25,6 +28,7 @@
     "type": "std_msgs/msg/Int32",
     "topic": "faderValue",
     "initial": -1,
+    "deadzone": 50,
     "timeout": 0
   },
   {
@@ -32,6 +36,7 @@
     "type": "std_msgs/msg/Int32",
     "topic": "angleValue",
     "initial": -1,
+    "deadzone": 50,
     "timeout": 0
   },
   {
@@ -39,6 +44,7 @@
     "type": "std_msgs/msg/Int32",
     "topic": "probeStartState",
     "initial": -1,
+    "deadzone": 0,
     "timeout": 0
   },
   {
@@ -46,6 +52,7 @@
     "type": "std_msgs/msg/Int32",
     "topic": "probeGoalState",
     "initial": -1,
+    "deadzone": 0,
     "timeout": 0
   },
   {
@@ -53,6 +60,7 @@
     "type": "std_msgs/msg/Int32",
     "topic": "OP180_1_State",
     "initial": -1,
+    "deadzone": 0,
     "timeout": 0
   },
   {
@@ -60,6 +68,7 @@
     "type": "std_msgs/msg/Int32",
     "topic": "OP180_2_State",
     "initial": -1,
+    "deadzone": 0,
     "timeout": 0
   }
 ]

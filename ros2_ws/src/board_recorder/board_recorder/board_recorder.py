@@ -352,6 +352,10 @@ class BoardRecorder(Node):
                         self.boards[board_id]['subs'][name]['timeout'] * 1e-3 >= \
                             time - self.boards[board_id]['subs'][name]['time']:
                         return
+                    if self.boards[board_id]['subs'][name]['deadzone'] > 0 and \
+                        self.boards[board_id]['subs'][name]['deadzone'] >= \
+                            abs(new - self.boards[board_id]['subs'][name]['value']):
+                        return
                     if self.boards[board_id]['is_recording']:
                         cur = self.db_con.cursor()
                         cur.execute(
@@ -381,6 +385,7 @@ class BoardRecorder(Node):
                 'value': self.board_config[i]['initial'],
                 'sub': generate_subscription(self.board_config[i]),
                 'timeout': self.board_config[i]['timeout'],
+                'deadzone': self.board_config[i]['deadzone'],
                 'time': - (self.board_config[i]['timeout'] + 1)
             }
 
