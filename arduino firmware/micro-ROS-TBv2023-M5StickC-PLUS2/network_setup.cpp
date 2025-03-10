@@ -1,6 +1,7 @@
 #include "network_setup.h"  // Only include the header once here
 #include <micro_ros_arduino.h>
 #include <ESPmDNS.h>  // For ESP32/ESP8266
+#include <M5StickCPlus2.h>
 
 #define CP() Serial.printf("%s:%d\n", __FUNCTION__, __LINE__)
 
@@ -37,7 +38,7 @@
 
 
 bool NetworkManager::saveConfig() {
-  StaticJsonDocument<256> doc;
+  StaticJsonDocument<512> doc;
   doc["wifi_ssid"] = wifi_ssid;
   doc["wifi_password"] = wifi_password;
   doc["ros_host"] = ros_host;
@@ -66,7 +67,7 @@ bool NetworkManager::loadConfig() {
     return false;
   }
 
-  StaticJsonDocument<256> doc;
+  StaticJsonDocument<512> doc;
   DeserializationError error = deserializeJson(doc, file);
   file.close();
   if (error) {
@@ -93,6 +94,21 @@ void NetworkManager::resetConfig() {
   Serial.printf("resetConfig: %d\n", retval);
 }
 
+void NetworkManager::enterConfig() {
+  ros_host = custom_ros_host.getValue();
+  ros_port = String(custom_ros_port.getValue()).toInt();
+  saveConfig();
+
+  StickCP2.Display.fillScreen(BLACK);
+  StickCP2.Display.setTextColor(WHITE, BLACK);
+  StickCP2.Display.setCursor(2, 2);
+  StickCP2.Display.setTextSize(2);
+  StickCP2.Display.printf(" CONFIG MODE\n\n");
+  StickCP2.Display.printf(" Connect to Wi-Fi\n of the device and\n");
+  StickCP2.Display.printf(" go to 192.168.4.1\n or\n toggle power.");
+
+  startConfigPortal();
+}
 
 void NetworkManager::setup() {
   bool loaded = loadConfig();
@@ -101,7 +117,7 @@ void NetworkManager::setup() {
   addParameter(&custom_ros_port);
 
   setSaveConfigCallback([this]() {
-    Serial.println("Saving configuration...");
+    Serial.println("Connection OK Saving configuration...");
 
     wifi_ssid = WiFi.SSID();     // Get current WiFi SSID
     wifi_password = WiFi.psk();  // Get current WiFi password
@@ -115,13 +131,22 @@ void NetworkManager::setup() {
   // });
 
   if (!loaded) {
-    startConfigPortal();
-    ros_host = custom_ros_host.getValue();
-    ros_port = String(custom_ros_port.getValue()).toInt();
-
-    saveConfig();
+    enterConfig();
   }
 
+  StickCP2.Display.fillScreen(BLACK);
+  StickCP2.Display.setTextColor(WHITE, BLACK);
+  StickCP2.Display.setCursor(0, 2);
+  StickCP2.Display.setTextSize(2);
+  StickCP2.Display.printf(" Connecting to\n   Wi-Fi...\n\n Please, wait!");
+
+  delay(1000);
+
+  StickCP2.Display.fillScreen(BLACK);
+  StickCP2.Display.setTextColor(WHITE, BLACK);
+  StickCP2.Display.setCursor(0, 2);
+  StickCP2.Display.setTextSize(2);
+  StickCP2.Display.printf(" Connecting to\n   micro-ROS...\n\n Please, wait!");
   Serial.println("Configuring Micro-ROS WiFi transport...");
   set_microros_wifi_transports(
     const_cast<char*>(wifi_ssid.c_str()),

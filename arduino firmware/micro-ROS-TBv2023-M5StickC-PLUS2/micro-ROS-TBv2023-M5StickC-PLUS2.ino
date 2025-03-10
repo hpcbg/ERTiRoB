@@ -105,6 +105,10 @@ unsigned long last_heartbeat_time = 0;
   }
 
 void ros_subscribe() {
+  if (WiFi.status() != WL_CONNECTED) {
+    ROS_OK = false;
+    return;
+  }
   ROS_OK = true;
 
   allocator = rcl_get_default_allocator();
@@ -248,13 +252,9 @@ void update_screen() {
     }
   } else if (screen_selector == 2) {
     if (StickCP2.BtnB.wasHold()) {
-      StickCP2.Display.fillScreen(BLACK);
-      StickCP2.Display.setCursor(2, 2);
-      StickCP2.Display.setTextSize(2);
-      StickCP2.Display.printf(" CONFIG MODE\n\n");
-      StickCP2.Display.printf(" Connect to Wi-Fi\n of the device and\n");
-      StickCP2.Display.printf(" go to 192.168.4.1\n or\n toggle power.");
-      nm.startConfigPortal();
+      nm.resetConfig();
+      delay(300);
+      ESP.restart();
     }
   } else if (screen_selector == 101) {
     if (StickCP2.BtnB.wasReleased()) {
@@ -266,6 +266,7 @@ void update_screen() {
       } else if (StickCP2.BtnA.wasHold()) {
         nm.resetConfig();
         delay(300);
+        ESP.restart();
       }
     }
   }
@@ -358,13 +359,18 @@ void screen_header() {
 }
 
 void setup() {
-  Serial.begin(115200);
-
   auto cfg = M5.config();
   StickCP2.begin(cfg);
+  if (StickCP2.BtnA.isPressed()) {
+    StickCP2.Speaker.tone(8000, 1000);
+    nm.resetConfig();
+    Serial.flush();
+    delay(300);
+    ESP.restart();
+  }
   porthub.begin();
   Serial.begin(115200);
-  delay(500);
+  delay(1000);
   pinMode(19, OUTPUT);  //GPIO19 for M5StickCPlus2 the builtin LED
 
   // Configure LCD display setup
@@ -373,7 +379,7 @@ void setup() {
   StickCP2.Display.setTextColor(WHITE, BLACK);
   StickCP2.Display.setCursor(0, 2);
   StickCP2.Display.setTextSize(2);
-  StickCP2.Display.printf(" Booting...\n Please, wait!");
+  StickCP2.Display.printf(" Booting.\n\n Please, wait...");
 
   String mac = WiFi.macAddress();
   for (int i = 0; i < mac.length(); ++i) {
@@ -385,9 +391,18 @@ void setup() {
 
   delay(500);
 
-  ros_subscribe();
+  if (WiFi.status() == WL_CONNECTED) {
+    StickCP2.Display.fillScreen(BLACK);
+    StickCP2.Display.setTextColor(WHITE, BLACK);
+    StickCP2.Display.setCursor(0, 2);
+    StickCP2.Display.setTextSize(2);
+    StickCP2.Display.printf(" Initializing\n   ROS node...\n\n Please, wait!");
+    ros_subscribe();
 
-  delay(500);
+    delay(500);
+  } else {
+    ROS_OK = false;
+  }
 
   StickCP2.Display.fillScreen(BLACK);
 }

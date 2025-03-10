@@ -28,6 +28,7 @@ public:
     : custom_ros_host("ros_host", "ROS Host", "192.168.0.1", 40),
       custom_ros_port("ros_port", "ROS Port", "8888", 6) {}
 
+  void enterConfig();
   void setup();
   void resetConfig();
 
