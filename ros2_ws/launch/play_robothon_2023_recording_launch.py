@@ -11,8 +11,8 @@ def generate_launch_description():
             output='screen',
             parameters=[{
                 'task_board_id': 'recording',
-                'board_config': './board_configs/default.json',
-                'recording': './recordings/test_recording.json',
+                'board_config': './board_configs/TBv2023.json',
+                'recording': './recordings/robothon_2023.json',
                 'timeout': 5
             }]
         )

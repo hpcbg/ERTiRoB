@@ -76,6 +76,8 @@ class RecordingPlayer(Node):
         self.timer = self.create_timer(
             timer_period, self.sensors_timer_callback)
 
+        self.heartbeat_timer_callback()
+
     def heartbeat_timer_callback(self):
         msg = String()
         msg.data = self.get_parameter(
