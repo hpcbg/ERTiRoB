@@ -1,5 +1,8 @@
 export function formatTime(time) {
-  return `${Math.round(time)}`;
+  const format = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+  });
+  return `${format.format(Math.round(time * 100) / 100)}`;
 }
 
 export function formatUnixTimestamp(timestamp) {
