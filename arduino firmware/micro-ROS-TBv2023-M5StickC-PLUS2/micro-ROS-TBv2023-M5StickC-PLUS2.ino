@@ -232,7 +232,7 @@ void update_screen() {
     if (StickCP2.BtnA.wasReleased()) {
       StickCP2.Display.fillScreen(BLACK);
       ++screen_selector;
-      if (screen_selector == 12) {
+      if (screen_selector == 15) {
         screen_selector = 0;
       }
     }
