@@ -1,0 +1,65 @@
+[
+  {
+    "name": "voltage",
+    "type": "std_msgs/msg/Int32",
+    "topic": "voltage",
+    "initial": -1,
+    "timeout": 10000
+  },
+  {
+    "name": "buttonPushState",
+    "type": "std_msgs/msg/Int32",
+    "topic": "buttonPushState",
+    "initial": -1,
+    "timeout": 0
+  },
+  {
+    "name": "stopBtnState",
+    "type": "std_msgs/msg/Int32",
+    "topic": "stopBtnState",
+    "initial": -1,
+    "timeout": 0
+  },
+  {
+    "name": "faderValue",
+    "type": "std_msgs/msg/Int32",
+    "topic": "faderValue",
+    "initial": -1,
+    "timeout": 0
+  },
+  {
+    "name": "angleValue",
+    "type": "std_msgs/msg/Int32",
+    "topic": "angleValue",
+    "initial": -1,
+    "timeout": 0
+  },
+  {
+    "name": "probeStartState",
+    "type": "std_msgs/msg/Int32",
+    "topic": "probeStartState",
+    "initial": -1,
+    "timeout": 0
+  },
+  {
+    "name": "probeGoalState",
+    "type": "std_msgs/msg/Int32",
+    "topic": "probeGoalState",
+    "initial": -1,
+    "timeout": 0
+  },
+  {
+    "name": "OP180_1_State",
+    "type": "std_msgs/msg/Int32",
+    "topic": "OP180_1_State",
+    "initial": -1,
+    "timeout": 0
+  },
+  {
+    "name": "OP180_2_State",
+    "type": "std_msgs/msg/Int32",
+    "topic": "OP180_2_State",
+    "initial": -1,
+    "timeout": 0
+  }
+]
