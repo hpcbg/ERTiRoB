@@ -78,6 +78,35 @@ export default function RosTaskBoardFetchRecordings({ rosRef }) {
     );
   }
 
+  function downloadRecording() {
+    const service = new ROSLIB.Service({
+      ros: rosRef.current,
+      name: "fetch_recording",
+      serviceType: "board_recorder_interfaces/srv/FetchRecording",
+    });
+
+    service.callService(
+      { task_board_id: taskBoardId, recording_id: parseInt(recordingIdInput) },
+      (response) => {
+        const blob = new Blob([response.recording_json], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `recording_${parseInt(
+          recordingIdInput
+        )}_${taskBoardId}_${Math.round(+new Date() / 1000)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        console.log(response);
+      },
+      (error) => console.log(error)
+    );
+  }
+
   function fetchNewRecordingEvents() {
     if (!recording || !("events" in recording)) return;
 
@@ -205,7 +234,12 @@ export default function RosTaskBoardFetchRecordings({ rosRef }) {
       <p>
         <Button type="button" style="button" onClick={fetchRecording}>
           Load recording
+        </Button>{" "}
+        <Button type="button" style="button" onClick={downloadRecording}>
+          Download recording
         </Button>
+      </p>
+      <p>
         <label>
           <input
             type="checkbox"
