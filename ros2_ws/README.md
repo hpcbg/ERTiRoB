@@ -45,11 +45,14 @@ Each configuration file should contain a list of JSON objects for each task boar
 |`type`|String with a ROS 2 type.|`"std_msgs/msg/Int32"`|
 |`topic`|String with a ROS 2 topic.|`"/button/A_status"`|
 |`initial`|The initial value of the sensor.|`-1`|
+|`deadzone`|Integer which defines the dead zone of the sensor. Useful for analog sensors like potentiometers to limit the amount of transmitted data. If this value is set to `0` any new data from the sensor will be recorded.|`50`|
 |`timeout`|Integer which defines the sampling time of the sensor in ms. If this value is set to `0` any new data from the sensor will be recorded without any timeout.|`10000`|
 
 ## Launch
 
-The complete automated way to start the task board recorder node is to `cd` to the `ros2_ws` folder and execute the script [`./scripts/start.bash`](./scripts/start.bash).
+The complete automated way to start the task board recorder node for the default test board configuration is to `cd` to the `ros2_ws` folder and execute the script [`./scripts/start.bash`](./scripts/start.bash).
+
+The complete automated way to start the task board recorder node for Task Board version 2023 (TBv2023) is to `cd` to the `ros2_ws` folder and execute the script [`./scripts/start_TBv2023.bash`](./scripts/start_TBv2023.bash).
 
 If you want to execute only a specific package you can source the ROS 2 environment by execution of [`./scripts/run_ros.bash`](./scripts/run_ros.bash) from the `ros2_ws` folder. Packages can be launched in different configurations. The [./launch](./launch/) directory contains various launch configurations. The complete configuration which also starts a rosbridge WebSocket server can be started with the following command `ros2 launch ./launch/complete_launch.py`
 
