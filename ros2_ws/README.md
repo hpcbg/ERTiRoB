@@ -54,7 +54,9 @@ The complete automated way to start the task board recorder node for the default
 
 The complete automated way to start the task board recorder node for Task Board version 2023 (TBv2023) is to `cd` to the `ros2_ws` folder and execute the script [`./scripts/start_TBv2023.bash`](./scripts/start_TBv2023.bash).
 
-If you want to execute only a specific package you can source the ROS 2 environment by execution of [`./scripts/run_ros.bash`](./scripts/run_ros.bash) from the `ros2_ws` folder. Packages can be launched in different configurations. The [./launch](./launch/) directory contains various launch configurations. The complete configuration which also starts a rosbridge WebSocket server can be started with the following command `ros2 launch ./launch/complete_launch.py`
+You can play a recording stored in a JSON file by using the `recording_player` node. Sample configuration for the node is stored in the launch file [`./launch/play_test_recording_launch.py`](./launch/play_test_recording_launch.py). The `timeout` parameter sets the seconds for which the start of the recording is delayed. Useful if you need to wait for the loading of the visualization software. You ca run the launch file with the following command `ros2 launch ./launch/play_test_recording_launch.py`.
+
+If you want to execute only a specific package you can source the ROS 2 environment by execution of [`./scripts/run_ros.bash`](./scripts/run_ros.bash) from the `ros2_ws` folder. Packages can be launched in different configurations. The [./launch](./launch/) directory contains various launch configurations. The complete configuration which also starts a rosbridge WebSocket server can be started with the following command `ros2 launch ./launch/complete_launch.py`.
 
 
 ## Additional packages compilation or rebuild
