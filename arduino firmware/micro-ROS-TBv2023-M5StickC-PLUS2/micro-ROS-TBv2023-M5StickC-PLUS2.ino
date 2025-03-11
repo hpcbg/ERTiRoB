@@ -1,8 +1,9 @@
+#include <SPIFFS.h>
+#include <ArduinoJson.h>
+#include <WiFiManager.h>
 #include <stdio.h>
-
 #include <M5StickCPlus2.h>
 #include "porthub.h"
-
 #include <micro_ros_arduino.h>
 #include <rcl/rcl.h>
 #include <rcutils/allocator.h>
@@ -10,8 +11,6 @@
 #include <rclc/rclc.h>
 #include <std_msgs/msg/string.h>
 #include <std_msgs/msg/int32.h>
-
-#include "network_setup.h"
 
 //-----------------------------------------------------------------------------------------
 // Global variables
@@ -22,9 +21,37 @@ unsigned long now = 0;
 unsigned long last = 0;
 unsigned long scan_time = -1;
 int screen_selector = 0;  // int to navigate multiple screens
-
-NetworkManager nm;
 // End of global variables
+//-----------------------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------------------
+// Network
+char ros_host[64] = "192.168.1.2";
+char ros_port[16] = "8888";
+WiFiManager wifiManager;
+WiFiManagerParameter ros_host_parameter("ros_host", "ROS Host", ros_host, 40);
+WiFiManagerParameter ros_port_parameter("ros_port", "ROS Port", ros_port, 6);
+#define CONFIG_FILE "/config.json"
+int WIFI_STATUS = -1;
+bool portalRunning = false;
+
+void resetSettings() {
+  StickCP2.Speaker.tone(8000, 1000);
+  wifiManager.resetSettings();
+  delay(3000);
+  ESP.restart();
+  delay(5000);
+}
+
+void saveParamsCallback() {
+  StaticJsonDocument<512> doc;
+  doc["ros_host"] = ros_host_parameter.getValue();
+  doc["ros_port"] = ros_port_parameter.getValue();
+  File file = SPIFFS.open(CONFIG_FILE, "w");
+  serializeJson(doc, file);
+  file.close();
+}
+// End of Network
 //-----------------------------------------------------------------------------------------
 
 
@@ -237,7 +264,6 @@ void update_screen() {
       }
     }
   }
-
   if (screen_selector == 0) {
     if (StickCP2.BtnB.wasReleased()) {
       if (!ROS_OK) {
@@ -252,21 +278,29 @@ void update_screen() {
     }
   } else if (screen_selector == 2) {
     if (StickCP2.BtnB.wasHold()) {
-      nm.resetConfig();
-      delay(300);
-      ESP.restart();
+      wifiManager.startConfigPortal();
+      portalRunning = true;
+      StickCP2.Display.fillScreen(BLACK);
+      screen_selector = 102;
     }
   } else if (screen_selector == 101) {
     if (StickCP2.BtnB.wasReleased()) {
       StickCP2.Display.fillScreen(BLACK);
       screen_selector = 1;
+    } else if (StickCP2.BtnA.wasHold()) {
+      ESP.restart();
+    }
+  } else if (screen_selector == 102) {
+    if (StickCP2.BtnB.wasPressed()) {
+      wifiManager.stopConfigPortal();
+      portalRunning = false;
+      StickCP2.Display.fillScreen(BLACK);
+      screen_selector = 2;
     } else {
       if (StickCP2.BtnA.wasReleased()) {
         ESP.restart();
       } else if (StickCP2.BtnA.wasHold()) {
-        nm.resetConfig();
-        delay(300);
-        ESP.restart();
+        resetSettings();
       }
     }
   }
@@ -280,7 +314,7 @@ void update_screen() {
       break;
     case 1:
       screen_header();
-      StickCP2.Display.printf(" Press button B to\n   REBOOT or RESET");
+      StickCP2.Display.printf(" Press button B to\n   REBOOT");
       break;
     case 2:
       screen_header();
@@ -288,15 +322,15 @@ void update_screen() {
       break;
     case 3:
       screen_header();
-      StickCP2.Display.printf(" ROS:\n %s:%s\n", nm.getRosHost(), String(nm.getRosPort()));
+      StickCP2.Display.printf(" ROS:\n %s:%s\n", ros_host, ros_port);
       break;
     case 4:
       screen_header();
-      StickCP2.Display.printf(" Wi-Fi SSID:\n %s\n", nm.getWifiSSID());
+      StickCP2.Display.printf(" Wi-Fi SSID:\n %s\n", WiFi.SSID().c_str());
       break;
     case 5:
       screen_header();
-      StickCP2.Display.printf(" Wi-Fi IP:\n %s\n", nm.getLocalIP());
+      StickCP2.Display.printf(" Wi-Fi IP:\n %s\n", WiFi.localIP().toString().c_str());
       break;
     case 6:
       screen_header();
@@ -334,14 +368,19 @@ void update_screen() {
       screen_header();
       StickCP2.Display.printf(" OP180_2_State: %d\n", OP180_2_State);
       break;
-    case 101:
-      StickCP2.Display.setCursor(2, 2);
+    case 101:  // Reboot or reset
+      StickCP2.Display.setCursor(0, 2);
       StickCP2.Display.setTextSize(2);
-      StickCP2.Display.printf(" HOLD button A\n   to RESET settings");
-      StickCP2.Display.setCursor(2, 52);
-      StickCP2.Display.printf(" Press button A\n   to REBOOT\n");
-      StickCP2.Display.setCursor(2, 102);
-      StickCP2.Display.printf(" Press button B\n   to CANCEL\n");
+      StickCP2.Display.printf(
+        " CONFIRM REBOOT\n\n\n Hold button A\n   to REBOOT\n\n Press button B\n   to CANCEL\n");
+      break;
+    case 102:  // Config Mode
+      StickCP2.Display.setCursor(0, 2);
+      StickCP2.Display.setTextSize(2);
+      StickCP2.Display.printf(
+        " CONFIG MODE\n\n Connect to:\n %s\n Go to %s\n A -> REBOOT\n B -> BACK\n Hold A -> RESET",
+        wifiManager.getConfigPortalSSID().c_str(),
+        WiFi.softAPIP().toString().c_str());
       break;
   }
 }
@@ -359,14 +398,11 @@ void screen_header() {
 }
 
 void setup() {
+  WiFi.mode(WIFI_STA);
   auto cfg = M5.config();
   StickCP2.begin(cfg);
   if (StickCP2.BtnA.isPressed()) {
-    StickCP2.Speaker.tone(8000, 1000);
-    nm.resetConfig();
-    Serial.flush();
-    delay(300);
-    ESP.restart();
+    resetSettings();
   }
   porthub.begin();
   Serial.begin(115200);
@@ -387,18 +423,52 @@ void setup() {
       MAC = MAC + mac[i];
   }
 
-  nm.setup();
+  SPIFFS.begin(true);
+  File file = SPIFFS.open(CONFIG_FILE, "r");
+  if (file) {
+    StaticJsonDocument<512> doc;
+    DeserializationError error = deserializeJson(doc, file);
+    file.close();
+    if (!error) {
+      strcpy(ros_host, doc["ros_host"]);
+      strcpy(ros_port, doc["ros_port"]);
+      ros_host_parameter.setValue(ros_host, 40);
+      ros_port_parameter.setValue(ros_port, 6);
+    }
+  }
+  wifiManager.addParameter(&ros_host_parameter);
+  wifiManager.addParameter(&ros_port_parameter);
+  wifiManager.setConfigPortalBlocking(false);
+  wifiManager.setSaveParamsCallback(saveParamsCallback);
+  delay(3000);
+  StickCP2.Display.fillScreen(BLACK);
+  StickCP2.Display.setCursor(0, 2);
+  StickCP2.Display.setTextSize(2);
+  StickCP2.Display.printf(" Connecting to\n   Wi-Fi...\n\n Please, wait\n   up to 30 seconds!");
+  wifiManager.setConnectTimeout(30);
+  if (wifiManager.autoConnect()) {
+    Serial.printf("ROS: %s:%s\n", ros_host, ros_port);
+    StickCP2.Display.fillScreen(BLACK);
+    StickCP2.Display.setCursor(0, 2);
+    StickCP2.Display.setTextSize(2);
+    StickCP2.Display.printf(" Connecting to\n   micro-ROS...\n\n Please, wait!");
+    set_microros_wifi_transports(
+      const_cast<char *>(WiFi.SSID().c_str()),
+      const_cast<char *>(WiFi.psk().c_str()),
+      const_cast<char *>(ros_host),
+      atol(ros_port));
+  } else {
+    wifiManager.stopConfigPortal();
+  }
 
   delay(500);
 
   if (WiFi.status() == WL_CONNECTED) {
     StickCP2.Display.fillScreen(BLACK);
-    StickCP2.Display.setTextColor(WHITE, BLACK);
     StickCP2.Display.setCursor(0, 2);
     StickCP2.Display.setTextSize(2);
     StickCP2.Display.printf(" Initializing\n   ROS node...\n\n Please, wait!");
     ros_subscribe();
-
     delay(500);
   } else {
     ROS_OK = false;
@@ -408,6 +478,10 @@ void setup() {
 }
 
 void loop() {
+  if (portalRunning) {
+    wifiManager.process();
+  }
+
   StickCP2.update();
 
   last = now;
