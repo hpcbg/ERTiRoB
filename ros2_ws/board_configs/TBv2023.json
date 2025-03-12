@@ -28,7 +28,7 @@
     "type": "std_msgs/msg/Int32",
     "topic": "faderValue",
     "initial": -1,
-    "deadzone": 50,
+    "deadzone": 10,
     "timeout": 0
   },
   {
@@ -36,7 +36,7 @@
     "type": "std_msgs/msg/Int32",
     "topic": "angleValue",
     "initial": -1,
-    "deadzone": 50,
+    "deadzone": 10,
     "timeout": 0
   },
   {
