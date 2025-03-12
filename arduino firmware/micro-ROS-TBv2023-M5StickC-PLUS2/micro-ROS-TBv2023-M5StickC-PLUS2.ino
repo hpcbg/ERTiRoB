@@ -20,7 +20,6 @@ String MAC = "";
 unsigned long now = 0;
 unsigned long last = 0;
 unsigned long scan_time = -1;
-int screen_selector = 0;  // int to navigate multiple screens
 // End of global variables
 //-----------------------------------------------------------------------------------------
 
@@ -253,8 +252,15 @@ void ros_publish() {
 // End of ROS 2
 //-----------------------------------------------------------------------------------------
 
+
+//-----------------------------------------------------------------------------------------
+// UI
+int screen_selector = 0;
+int current_screen = -1;
+unsigned long last_screen_redraw = 0;
+unsigned long screen_redraw_timeout = 500;
+
 void update_screen() {
-  // Screen switching logic
   if (screen_selector < 100) {
     if (StickCP2.BtnA.wasReleased()) {
       StickCP2.Display.fillScreen(BLACK);
@@ -304,6 +310,14 @@ void update_screen() {
       }
     }
   }
+
+  unsigned long now = millis();
+  if (current_screen == screen_selector && now - last_screen_redraw < screen_redraw_timeout) {
+    return;
+  }
+
+  last_screen_redraw = now;
+  current_screen = screen_selector;
 
   switch (screen_selector) {
     case 0:
@@ -391,11 +405,14 @@ void screen_header() {
   StickCP2.Display.printf(" Wi-Fi: %s, ROS: %s\n",
                           WiFi.status() == WL_CONNECTED ? "OK" : "--",
                           ROS_OK ? "OK" : "--");
-  StickCP2.Display.printf(" Battery: %d%% %0.1fV\n\n",
+  StickCP2.Display.printf(" Battery: %3d%% %1.1fV\n\n",
                           (int)StickCP2.Power.getBatteryLevel(),
                           (float)StickCP2.Power.getBatteryVoltage() / 1000);
   StickCP2.Display.printf(" Press button A to\n   SELECT screen\n\n");
 }
+// Enf of UI
+//-----------------------------------------------------------------------------------------
+
 
 void setup() {
   WiFi.mode(WIFI_STA);
