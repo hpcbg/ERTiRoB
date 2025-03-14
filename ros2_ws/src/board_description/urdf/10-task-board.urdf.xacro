@@ -1,0 +1,466 @@
+<?xml version="1.0"?>
+<robot name="task-board" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  <xacro:property name="sphere_radius" value="0.003" />
+  <xacro:property name="cylinder_radius" value="0.003" />
+  <xacro:property name="cylinder_length" value="0.01" />
+  <xacro:property name="cable_height" value="2" />
+  <xacro:property name="damping" value="0.1" />
+  <xacro:property name="friction" value="0.0" />
+
+  <material name="blue">
+    <color rgba="0 0 0.8 1"/>
+  </material>
+  <material name="black">
+    <color rgba="0 0 0 1"/>
+  </material>
+  <material name="white">
+    <color rgba="1 1 1 1"/>
+  </material>
+  <material name="red">
+    <color rgba="0.8 0.0 0.0 1.0"/>
+  </material>
+  <material name="orange">
+    <color rgba="1 0.3 0.1 1"/>
+  </material>
+  <material name="green">
+    <color rgba="0.0 0.8 0.0 1.0"/>
+  </material>
+  <material name="gray">
+    <color rgba="0.2 0.2 0.2 1.0"/>
+  </material>
+  
+   <!-- World link (invisible) -->
+   <link name="world"/>
+  
+  <!-- Taks board link-->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://urdf_tutorial/meshes/TaskBoardMain.stl" scale="1 1 1"/>
+      </geometry>
+      <material name="white"/>
+      <origin rpy="0 -1.57 -1.57" xyz="0 0 0.4"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.15207 0.25367 0.08"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="7"/>
+      <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+    </inertial>
+  </link>
+  
+  <!-- Fixed joint to connect base_link to world -->
+  <joint name="fixed_to_world" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0.4" rpy="0 0 0"/>
+  </joint>
+  
+  <link name="m5stick">
+    <visual>
+      <geometry>
+        <!-- <box size="0.048 0.024 0.014"/> -->
+        <mesh filename="package://urdf_tutorial/meshes/TaskBoardM5StickC.stl" scale="1 1 1"/>
+      </geometry>
+      <material name="orange"/>
+      <origin rpy="0 -1.57 3.141" xyz="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.048 0.024 0.014"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.07"/>
+      <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+    </inertial>
+  </link>
+
+  <joint name="m5stick_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="m5stick"/>
+    <origin xyz="0.024 0.097 0.087"/>
+  </joint>
+
+  <link name="stop_button">
+    <visual>
+      <geometry>
+        <cylinder length="0.01" radius="0.0058"/>
+      </geometry>
+      <material name = "red"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.01" radius="0.0058"/>
+      </geometry>
+      <origin rpy = "0 0 0" xyz = "0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+    </inertial>
+  </link>
+
+  <joint name = "stop_button_joint" type="prismatic">
+    <parent link = "base_link"/>
+    <child link = "stop_button"/>
+    <origin xyz = "-0.03 0.0957 0.079"/>
+    <limit effort="100" lower="-0.004" upper="0.00" velocity="2.0"/> 
+    <axis xyz = "0 0 1"/> 
+    <dynamics damping="0.4" friction="5" />
+  </joint>
+
+  <link name="start_button">
+    <visual>
+      <geometry>
+        <cylinder length="0.01" radius="0.0058"/>
+      </geometry>
+      <material name="blue"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.01" radius="0.0058"/>
+      </geometry>
+      <origin rpy = "0 0 0" xyz = "0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+    </inertial>
+  </link>
+
+  <joint name = "start_button_joint" type="prismatic">
+    <parent link = "base_link"/>
+    <child link = "start_button"/>
+    <origin xyz = "-0.0446 0.0957 0.079"/>
+    <limit effort="100" lower="-0.004" upper="0.00" velocity="2.0"/> 
+    <axis xyz = "0 0 1"/> 
+    <dynamics damping="0.4" friction="5" />
+  </joint>
+  
+  <link name="slider">
+    <visual>
+      <geometry>
+        <cylinder length="0.01" radius="0.004"/>
+      </geometry>
+      <material name="black"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.01" radius="0.004"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.150" />
+      <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+    </inertial>
+  </link>
+
+  <joint name = "slider_joint" type="prismatic">
+    <parent link = "base_link"/>
+    <child link = "slider"/>
+    <origin xyz = "0.0448 0.062 0.08"/>
+    <limit effort="100" lower="-0.025" upper="0.00" velocity="2.0"/> 
+    <axis xyz = "1 0 0"/> 
+    <dynamics damping="0.4" friction="5" />
+  </joint>
+  
+  <link name = "door">
+    <visual>
+      <geometry>
+        <box size = "0.085 0.085 0.005"/>
+      </geometry>
+      <material name = "gray"/>
+      <origin xyz = "-0.042 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size = "0.085 0.085 0.005"/>
+      </geometry>
+      <origin xyz = "-0.042 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.150" />
+      <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+    </inertial>
+  </link>
+  
+  <joint name = "door_joint" type="revolute">
+    <parent link = "base_link"/>
+    <child link = "door"/>
+    <origin xyz = "0.0365 -0.047 0.081"/>
+    <limit effort="100" lower="0.0" upper="2.076" velocity="2.0"/> 
+    <axis xyz = "0 1 0"/> 
+    <dynamics damping="0.1" friction="0.1" />
+  </joint>
+  
+  <link name = "door_grip">
+    <visual>
+      <geometry>
+        <cylinder length = "0.003" radius = "0.0075"/>
+      </geometry>
+      <material name = "black"/>
+      <origin rpy = "0 0 0" xyz = "0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length = "0.003" radius = "0.0075"/>
+      </geometry>
+      <origin rpy = "0 0 0" xyz = "0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.1" />
+      <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+    </inertial>
+  </link>
+  
+  <joint name = "door_grip" type="fixed">
+    <parent link = "door"/>
+    <child link = "door_grip"/>
+    <origin xyz = "-0.063 0.0 0.01"/>
+  </joint>
+  
+  <link name = "cable_winding_left">
+    <visual>
+      <geometry>
+        <mesh filename="package://urdf_tutorial/meshes/Cable_Winding_Left.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name = "black"/>
+      <origin rpy = "-0.64 0 -1.5707" xyz = "0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://urdf_tutorial/meshes/Cable_Winding_Left.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <origin rpy = "0 0 0" xyz = "0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.1" />
+      <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+    </inertial>
+  </link>
+  
+  <joint name = "cable_winding_left_joint" type="fixed">
+    <parent link = "base_link"/>
+    <child link = "cable_winding_left"/>
+    <origin xyz = "-0.088 0.015 0.086"/>
+  </joint>
+  
+  <link name = "cable_winding_right">
+    <visual>
+      <geometry>
+        <mesh filename="package://urdf_tutorial/meshes/Cable_Winding_Right.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name = "black"/>
+      <origin rpy = "-0.64 0 -1.5707" xyz = "0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://urdf_tutorial/meshes/Cable_Winding_Right.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <origin rpy = "0 0 0" xyz = "0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.1" />
+      <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+    </inertial>
+  </link>
+  
+  <joint name = "cable_winding_right_joint" type="fixed">
+    <parent link = "base_link"/>
+    <child link = "cable_winding_right"/>
+    <origin xyz = "-0.088 -0.05 0.086"/>
+  </joint>
+
+  <link name = "probe_holder">
+    <visual>
+      <geometry>
+        <mesh filename="package://urdf_tutorial/meshes/Probe_Holder.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name = "gray"/>
+      <origin rpy = "0 0 0" xyz = "0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://urdf_tutorial/meshes/Probe_Holder.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <origin rpy = "0 0 0" xyz = "0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.1" />
+      <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+    </inertial>
+  </link>
+  
+  <joint name = "probe_holder_joint" type="fixed">
+    <parent link = "base_link"/>
+    <child link = "probe_holder"/>
+    <origin xyz = "0.0719 -0.113 0.078"/>
+  </joint>
+  
+  <!-- Cable segment macro -->
+  <xacro:macro name="cable_segment" params="name parent">
+    <!-- Spherical joint -->
+    <link name="${name}_sphere">
+      <visual>
+        <geometry>
+          <sphere radius="${sphere_radius}"/>
+        </geometry>
+        <material name="gray"/>
+      </visual>
+      <collision>
+        <geometry>
+          <sphere radius="${sphere_radius}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.005"/>
+        <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      </inertial>
+    </link>
+    
+  <joint name="${parent}_to_${name}_sphere" type="revolute">
+    <parent link="${parent}"/>
+    <child link="${name}_sphere"/>
+    <origin xyz="0 0 ${-cylinder_length - 2 * sphere_radius}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-3.14" upper="3.14" effort="10" velocity="3"/>
+    <dynamics damping="${damping}" friction="${friction}"/>
+  </joint>
+  
+  <!-- Cylinder segment -->
+  <link name="${name}_cylinder">
+    <visual>
+      <geometry>
+        <cylinder length="${cylinder_length}" radius="${cylinder_radius}"/>
+      </geometry>
+      <origin xyz="0 0 ${-cylinder_length/2- sphere_radius}" rpy="0 0 0"/>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="${cylinder_length}" radius="${cylinder_radius}"/>
+      </geometry>
+      <origin xyz="0 0 ${-cylinder_length/2- sphere_radius}" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      <origin xyz="0 0 ${-cylinder_length/2- sphere_radius}" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <joint name="${name}_sphere_to_cylinder" type="revolute">
+    <parent link="${name}_sphere"/>
+    <child link="${name}_cylinder"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-3.14" upper="3.14" effort="10" velocity="3"/>
+    <dynamics damping="${damping}" friction="${friction}"/>
+  </joint>
+  
+  
+    <!-- Enable self-collision for this segment -->
+  <gazebo reference="${name}_sphere">
+    <material>Gazebo/Gray</material>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+
+  <gazebo reference="${name}_cylinder">
+    <material>Gazebo/Blue</material>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  
+  </xacro:macro>
+  <!-- length 101 meters -->
+  <!-- Create 50 segments -->
+  <xacro:cable_segment name="segment_1" parent="base_link"/>
+  <xacro:cable_segment name="segment_2" parent="segment_1_cylinder"/>
+  <xacro:cable_segment name="segment_3" parent="segment_2_cylinder"/>
+  <xacro:cable_segment name="segment_4" parent="segment_3_cylinder"/>
+  <xacro:cable_segment name="segment_5" parent="segment_4_cylinder"/>
+  <xacro:cable_segment name="segment_6" parent="segment_5_cylinder"/>
+  <xacro:cable_segment name="segment_7" parent="segment_6_cylinder"/>
+  <xacro:cable_segment name="segment_8" parent="segment_7_cylinder"/>
+  <xacro:cable_segment name="segment_9" parent="segment_8_cylinder"/>
+  <xacro:cable_segment name="segment_10" parent="segment_9_cylinder"/>
+  <xacro:cable_segment name="segment_11" parent="segment_10_cylinder"/>
+  <xacro:cable_segment name="segment_12" parent="segment_11_cylinder"/>
+  <xacro:cable_segment name="segment_13" parent="segment_12_cylinder"/>
+  <xacro:cable_segment name="segment_14" parent="segment_13_cylinder"/>
+  <xacro:cable_segment name="segment_15" parent="segment_14_cylinder"/>
+  <xacro:cable_segment name="segment_16" parent="segment_15_cylinder"/>
+  <xacro:cable_segment name="segment_17" parent="segment_16_cylinder"/>
+  <xacro:cable_segment name="segment_18" parent="segment_17_cylinder"/>
+  <xacro:cable_segment name="segment_19" parent="segment_18_cylinder"/>
+  <xacro:cable_segment name="segment_20" parent="segment_19_cylinder"/>
+  <xacro:cable_segment name="segment_21" parent="segment_20_cylinder"/>
+  <xacro:cable_segment name="segment_22" parent="segment_21_cylinder"/>
+  <xacro:cable_segment name="segment_23" parent="segment_22_cylinder"/>
+  <xacro:cable_segment name="segment_24" parent="segment_23_cylinder"/>
+  <xacro:cable_segment name="segment_25" parent="segment_24_cylinder"/>
+  <xacro:cable_segment name="segment_26" parent="segment_25_cylinder"/>
+  <xacro:cable_segment name="segment_27" parent="segment_26_cylinder"/>
+  <xacro:cable_segment name="segment_28" parent="segment_27_cylinder"/>
+  <xacro:cable_segment name="segment_29" parent="segment_28_cylinder"/>
+  <xacro:cable_segment name="segment_30" parent="segment_29_cylinder"/>
+  <xacro:cable_segment name="segment_31" parent="segment_30_cylinder"/>
+  <xacro:cable_segment name="segment_32" parent="segment_31_cylinder"/>
+  <xacro:cable_segment name="segment_33" parent="segment_32_cylinder"/>
+  <xacro:cable_segment name="segment_34" parent="segment_33_cylinder"/>
+  <xacro:cable_segment name="segment_35" parent="segment_34_cylinder"/>
+  <xacro:cable_segment name="segment_36" parent="segment_35_cylinder"/>
+  <xacro:cable_segment name="segment_37" parent="segment_36_cylinder"/>
+  <xacro:cable_segment name="segment_38" parent="segment_37_cylinder"/>
+  <xacro:cable_segment name="segment_39" parent="segment_38_cylinder"/>
+  <xacro:cable_segment name="segment_40" parent="segment_39_cylinder"/>
+  <xacro:cable_segment name="segment_41" parent="segment_40_cylinder"/>
+  <xacro:cable_segment name="segment_42" parent="segment_41_cylinder"/>
+  <xacro:cable_segment name="segment_43" parent="segment_42_cylinder"/>
+  <xacro:cable_segment name="segment_44" parent="segment_43_cylinder"/>
+  <xacro:cable_segment name="segment_45" parent="segment_44_cylinder"/>
+  <xacro:cable_segment name="segment_46" parent="segment_45_cylinder"/>
+  <xacro:cable_segment name="segment_47" parent="segment_46_cylinder"/>
+  <xacro:cable_segment name="segment_48" parent="segment_47_cylinder"/>
+  <xacro:cable_segment name="segment_49" parent="segment_48_cylinder"/>
+  <xacro:cable_segment name="segment_50" parent="segment_49_cylinder"/>
+
+  <!-- add one sphere at the end -->
+  <link name="end_sphere">
+    <visual>
+      <geometry>
+        <sphere radius="${sphere_radius}"/>
+      </geometry>
+      <material name="gray"/>
+    </visual>
+    <collision>
+      <geometry>
+        <sphere radius="${sphere_radius}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.005"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <joint name="joint_end_sphere" type="revolute">
+    <parent link="segment_50_cylinder"/>
+    <child link="end_sphere"/>
+    <origin xyz="0 0 ${-cylinder_length - 2 * sphere_radius}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.57" upper="1.57" effort="10" velocity="3"/>
+    <dynamics damping="${damping}" friction="${friction}"/>
+  </joint>
+  
+</robot>

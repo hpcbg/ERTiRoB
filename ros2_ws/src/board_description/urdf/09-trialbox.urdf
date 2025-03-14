@@ -1,0 +1,200 @@
+<?xml version="1.0"?>
+<robot name="trialbox">
+
+  <material name="blue">
+    <color rgba="0 0 0.8 1"/>
+  </material>
+  <material name="black">
+    <color rgba="0 0 0 1"/>
+  </material>
+  <material name="white">
+    <color rgba="1 1 1 1"/>
+  </material>
+  
+  
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://urdf_tutorial/meshes/task_board_v2023.stl" scale="1 1 1"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.15207 0.25367 0.08"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="7"/>
+      <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+    </inertial>
+  </link>
+
+  <link name="m5stick">
+    <visual>
+      <geometry>
+        <box size="0.048 0.024 0.014"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.048 0.024 0.014"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.07"/>
+      <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+    </inertial>
+  </link>
+
+  <joint name="m5stick_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="m5stick"/>
+    <origin xyz="0.024 0.097 0.087"/>
+  </joint>
+
+  <link name="stop_button">
+    <visual>
+      <geometry>
+        <cylinder length="0.01" radius="0.0058"/>
+      </geometry>
+      <material name = "red"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.01" radius="0.0058"/>
+      </geometry>
+      <origin rpy = "0 0 0" xyz = "0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+    </inertial>
+  </link>
+
+  <joint name = "stop_button_joint" type="prismatic">
+    <parent link = "base_link"/>
+    <child link = "stop_button"/>
+    <origin xyz = "-0.03 0.0957 0.079"/>
+    <limit effort="100" lower="-0.004" upper="0.00" velocity="2.0"/> 
+    <axis xyz = "0 0 1"/> 
+    <dynamics damping="0.4" friction="5" />
+  </joint>
+
+  <link name="start_button">
+    <visual>
+      <geometry>
+        <cylinder length="0.01" radius="0.0058"/>
+      </geometry>
+      <material name="blue"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.01" radius="0.0058"/>
+      </geometry>
+      <origin rpy = "0 0 0" xyz = "0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+    </inertial>
+  </link>
+
+  <joint name = "start_button_joint" type="prismatic">
+    <parent link = "base_link"/>
+    <child link = "start_button"/>
+    <origin xyz = "-0.0446 0.0957 0.079"/>
+    <limit effort="100" lower="-0.004" upper="0.00" velocity="2.0"/> 
+    <axis xyz = "0 0 1"/> 
+    <dynamics damping="0.4" friction="5" />
+  </joint>
+  
+  <link name="slider">
+    <visual>
+      <geometry>
+        <cylinder length="0.01" radius="0.004"/>
+      </geometry>
+      <material name="black"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.01" radius="0.004"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.150" />
+      <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+    </inertial>
+  </link>
+
+  <joint name = "slider_joint" type="prismatic">
+    <parent link = "base_link"/>
+    <child link = "slider"/>
+    <origin xyz = "0.0448 0.062 0.08"/>
+    <limit effort="100" lower="-0.025" upper="0.00" velocity="2.0"/> 
+    <axis xyz = "1 0 0"/> 
+    <dynamics damping="0.4" friction="5" />
+  </joint>
+  
+  <link name = "door">
+    <visual>
+      <geometry>
+        <box size = "0.085 0.085 0.005"/>
+      </geometry>
+      <material name = "blue"/>
+      <origin xyz = "-0.042 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size = "0.085 0.085 0.005"/>
+      </geometry>
+      <origin xyz = "-0.042 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.150" />
+      <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+    </inertial>
+  </link>
+  
+  <joint name = "door_joint" type="revolute">
+    <parent link = "base_link"/>
+    <child link = "door"/>
+    <origin xyz = "0.0365 -0.047 0.081"/>
+    <limit effort="100" lower="0.0" upper="2.076" velocity="2.0"/> 
+    <axis xyz = "0 1 0"/> 
+    <dynamics damping="0.1" friction="0.1" />
+  </joint>
+  
+  <link name = "door_grip">
+    <visual>
+      <geometry>
+        <cylinder length = "0.003" radius = "0.0075"/>
+      </geometry>
+      <material name = "black"/>
+      <origin rpy = "0 0 0" xyz = "0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length = "0.003" radius = "0.0075"/>
+      </geometry>
+      <origin rpy = "0 0 0" xyz = "0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.1" />
+      <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+    </inertial>
+  </link>
+  
+  <joint name = "door_grip" type="fixed">
+    <parent link = "door"/>
+    <child link = "door_grip"/>
+    <origin xyz = "-0.063 0.0 0.01"/>
+  </joint>
+
+</robot>
