@@ -2,19 +2,18 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
+from launch_ros.actions import Node
 
 
 def generate_launch_description():
     ld = LaunchDescription()
 
-    urdf_tutorial_path = FindPackageShare('urdf_tutorial')
-    default_model_path = PathJoinSubstitution(['urdf', '10-task-board.urdf.xacro'])
-    default_rviz_config_path = PathJoinSubstitution([urdf_tutorial_path, 'rviz', 'urdf.rviz'])
+    urdf_path = FindPackageShare('board_description')
 
-    # These parameters are maintained for backwards compatibility
-    gui_arg = DeclareLaunchArgument(name='gui', default_value='true', choices=['true', 'false'],
-                                    description='Flag to enable joint_state_publisher_gui')
-    ld.add_action(gui_arg)
+    default_model_path = PathJoinSubstitution(['urdf', 'task_board.urdf'])
+
+    default_rviz_config_path = PathJoinSubstitution(
+        [urdf_path, 'rviz', 'task_board.rviz'])
     rviz_arg = DeclareLaunchArgument(name='rvizconfig', default_value=default_rviz_config_path,
                                      description='Absolute path to rviz config file')
     ld.add_action(rviz_arg)
@@ -23,13 +22,22 @@ def generate_launch_description():
     ld.add_action(DeclareLaunchArgument(name='model', default_value=default_model_path,
                                         description='Path to robot urdf file relative to urdf_tutorial package'))
 
+    urdf_launch_package = FindPackageShare('urdf_launch')
+
+    # need to manually pass configuration in because of https://github.com/ros2/launch/issues/313
     ld.add_action(IncludeLaunchDescription(
-        PathJoinSubstitution([FindPackageShare('urdf_launch'), 'launch', 'display.launch.py']),
+        PathJoinSubstitution(
+            [urdf_launch_package, 'launch', 'description.launch.py']),
         launch_arguments={
-            'urdf_package': 'urdf_tutorial',
-            'urdf_package_path': LaunchConfiguration('model'),
-            'rviz_config': LaunchConfiguration('rvizconfig'),
-            'jsp_gui': LaunchConfiguration('gui')}.items()
+            'urdf_package': 'board_description',
+            'urdf_package_path': LaunchConfiguration('model')}.items()
+    ))
+
+    ld.add_action(Node(
+        package='rviz2',
+        executable='rviz2',
+        output='screen',
+        arguments=['-d', LaunchConfiguration('rvizconfig')],
     ))
 
     return ld
