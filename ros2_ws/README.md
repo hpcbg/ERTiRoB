@@ -14,17 +14,19 @@ Note: the current task board recorder node records only events when a new (diffe
 
 ## Contents
 
-- [Installation](#installation)
-- [Task board configuration](#task-board-configuration)
-- [Launch](#launch)
-- [Additional packages compilation or rebuild](#additional-packages-compilation-or-rebuild)
-- [Actions provided by the task board recorder](#actions-provided-by-the-task-board-recorder)
-  - [Task board management](#task-board-management)
-  - [Recordings control](#recordings-control)
-- [Services provided by the task board recorder](#services-provided-by-the-task-board-recorder)
-  - [Task board management](#task-board-management-1)
-  - [Fetching recordings data](#fetching-recordings-data)
-  - [Fetching task board sensors data](#fetching-task-board-sensors-data)
+- [ROS 2 Task Board Recorder](#ros-2-task-board-recorder)
+  - [Contents](#contents)
+  - [Installation](#installation)
+  - [Task board configuration](#task-board-configuration)
+  - [Launch](#launch)
+  - [Additional packages compilation or rebuild](#additional-packages-compilation-or-rebuild)
+  - [Actions provided by the task board recorder](#actions-provided-by-the-task-board-recorder)
+    - [Task board management](#task-board-management)
+    - [Recordings control](#recordings-control)
+  - [Services provided by the task board recorder](#services-provided-by-the-task-board-recorder)
+    - [Task board management](#task-board-management-1)
+    - [Fetching recordings data](#fetching-recordings-data)
+    - [Fetching task board sensors data](#fetching-task-board-sensors-data)
 
 ## Installation
 
@@ -55,7 +57,7 @@ The complete automated way to start the task board recorder node for the default
 
 The complete automated way to start the task board recorder node for Task Board version 2023 (TBv2023) is to `cd` to the `ros2_ws` folder and execute the script [`./scripts/start_TBv2023.bash`](./scripts/start_TBv2023.bash).
 
-You can play a recording stored in a JSON file by using the `recording_player` node. Sample configuration for the node is stored in the launch file [`./launch/play_test_recording_launch.py`](./launch/play_test_recording_launch.py). The `timeout` parameter sets the seconds for which the start of the recording is delayed. Useful if you need to wait for the loading of the visualization software. You ca run the launch file with the following command `ros2 launch ./launch/play_test_recording_launch.py`. You can also play a recording of the execution of the ROBOTHON_2023 protocol executed on a Task Board version 2023 with the following command `ros2 launch ./launch/play_robothon_2023_recording_launch.py`. For this recording the angle sensor is mounted, so, that it shows 4035 when door is fully closed, 4030 - 0 degrees, 2770 - 90 degrees, 2365 - fully opened.
+You can play a recording stored in a JSON file by using the `recording_player` node. Sample configuration for the node is stored in the launch file [`./launch/play_test_recording_launch.py`](./launch/play_test_recording_launch.py). The `timeout` parameter sets the seconds for which the start of the recording is delayed. Useful if you need to wait for the loading of the visualization software. You ca run the launch file with the following command `ros2 launch ./launch/play_test_recording_launch.py`. You can also play a recording of the execution of the ROBOTHON_2023 protocol executed on a Task Board version 2023 with the following command `ros2 launch ./launch/play_robothon_2023_recording_launch.py`. For this recording the angle sensor is mounted, so, that it shows 4035 when door is fully closed, 4030 - 0 degrees, 2770 - 90 degrees, 2365 - fully opened. Yon can visualize the recording with `ros2 launch ./launch/display_TBv2023_launch.py`.
 
 If you want to execute only a specific package you can source the ROS 2 environment by execution of [`./scripts/run_ros.bash`](./scripts/run_ros.bash) from the `ros2_ws` folder. Packages can be launched in different configurations. The [./launch](./launch/) directory contains various launch configurations. The complete configuration which also starts a rosbridge WebSocket server can be started with the following command `ros2 launch ./launch/complete_launch.py`.
 
