@@ -30,6 +30,7 @@ class BoardJointPub(Node):
         task_board_id = self.get_parameter(
             'task_board_id').get_parameter_value().string_value
 
+        self.last_lid_angle_change = 0
         self.lid_angle = 0.0
         self.angle_value_sub = self.create_subscription(
             Int32, f'/task_board_{task_board_id}/angleValue', self.angle_value_callback, 10)
@@ -113,16 +114,24 @@ class BoardJointPub(Node):
         self.tf_broadcaster.sendTransform(t)
 
     def angle_value_callback(self, msg):
-        new_lid_angle = (4076 - msg.data) / (4076 - 2800) * math.pi / 2
-        if self.probe_goal_state == 1 and abs(new_lid_angle - self.lid_angle) > 0.01:
-            # move probe
-            self.probe['x'] = -0.118
-            self.probe['y'] = - 0.032 + math.cos(new_lid_angle) * 0.047
-            self.probe['z'] = 0.0045 + math.sin(new_lid_angle) * 0.047
-            self.probe['rx'] = 0.2
-            self.probe['rz'] = math.pi / 2
+        now = self.get_clock().now().nanoseconds * 1e-9
+        new_lid_angle = (4076 - msg.data) / (4076 - 2800) * math.pi / 2 - 0.08
+        if abs(new_lid_angle - self.lid_angle) > 0.001:
+            self.last_lid_angle_change = now
+        if self.probe_goal_state == 1:
+            if now - self.last_lid_angle_change < 5:
+                # move probe
+                self.probe['x'] = -0.118
+                self.probe['y'] = - 0.032 + \
+                    math.cos(new_lid_angle + 0.08) * 0.047
+                self.probe['z'] = 0.0045 + \
+                    math.sin(new_lid_angle + 0.08) * 0.047
+                self.probe['rx'] = 0.2
+                self.probe['rz'] = math.pi / 2
+            else:
+                self.probe = self.probe_in_air.copy()
 
-        self.lid_angle = new_lid_angle - 0.08
+        self.lid_angle = new_lid_angle
 
     def fader_value_callback(self, msg):
         self.slider_position = (msg.data - 2048) / 2048 * 0.018
