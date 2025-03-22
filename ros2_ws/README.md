@@ -32,9 +32,11 @@ Note: the current task board recorder node records only events when a new (diffe
 
 Ubuntu 24.04.1 LTS is required. ROS 2 Jazzy Jalisco must be istalled as described in the official ROS 2 documentation: [https://docs.ros.org/en/jazzy/Installation.html](https://docs.ros.org/en/jazzy/Installation.html).
 
-After that this repo can be cloned and the initial install requires the script [`./scripts/initial_build.bash`](./scripts/build.bash) to be executed from the `ros2_ws` folder. This script will install the `micro_ros_setup` package, set up a new `micro_ros_node` and build all of the packages.
+After that this repo can be cloned and the initial install requires the script [`./scripts/initial_build.bash`](./scripts/build.bash) to be executed from the `ros2_ws` folder. This script will install the `micro_ros_setup` package, set up a new `micro_ros_node` and build all of the packages. This script will also install `ros-jazzy-urdf-launch` which is required by RViz and `ros-jazzy-webots-ros2` which is required if you need to execute the Webots simulation.
 
 The `rosbridge_suite` which is useful for a WebSocket communication will also be installed. Please, note that modern browsers reuqire a Web Socket Secure (WSS) communication. So, a self-signed certificate is provided in the folder [./launch/rosbridge_certificate](./launch/rosbridge_certificate/). If this certificate is used you might be required to add it as an exception into your browser by loading `https://<rosbridge-address>:<rosbridge-port>`.
+
+If you want to execute the Webots simulation you need to install also Webots. More information on [https://cyberbotics.com/](https://cyberbotics.com/).
 
 ## Task board configuration
 
@@ -58,6 +60,8 @@ The complete automated way to start the task board recorder node for the default
 The complete automated way to start the task board recorder node for Task Board version 2023 (TBv2023) is to `cd` to the `ros2_ws` folder and execute the script [`./scripts/start_TBv2023.bash`](./scripts/start_TBv2023.bash).
 
 You can play a recording stored in a JSON file by using the `recording_player` node. Sample configuration for the node is stored in the launch file [`./launch/play_test_recording_launch.py`](./launch/play_test_recording_launch.py). The `timeout` parameter sets the seconds for which the start of the recording is delayed. Useful if you need to wait for the loading of the visualization software. You ca run the launch file with the following command `ros2 launch ./launch/play_test_recording_launch.py`. You can also play a recording of the execution of the ROBOTHON_2023 protocol executed on a Task Board version 2023 with the following command `ros2 launch ./launch/play_robothon_2023_recording_launch.py`. For this recording the angle sensor is mounted, so, that it shows 4035 when door is fully closed, 4030 - 0 degrees, 2770 - 90 degrees, 2365 - fully opened. Yon can visualize the recording with `ros2 launch ./launch/display_TBv2023_launch.py`.
+
+You can start the Webots simulation by execution of [`./scripts/run_webots.bash`](./scripts/run_webots.bash) from the `ros2_ws` folder. This open the Webots simulator and start the ROS 2 launch file [`./launch/webots_simulation_launch.py`](./launch/webots_simulation_launch.py). You can also restart the simulation controllers by using the launch file.
 
 If you want to execute only a specific package you can source the ROS 2 environment by execution of [`./scripts/run_ros.bash`](./scripts/run_ros.bash) from the `ros2_ws` folder. Packages can be launched in different configurations. The [./launch](./launch/) directory contains various launch configurations. The complete configuration which also starts a rosbridge WebSocket server can be started with the following command `ros2 launch ./launch/complete_launch.py`.
 
