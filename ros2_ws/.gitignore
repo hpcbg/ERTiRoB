@@ -5,6 +5,10 @@ log
 db/*
 !db/.gitkeep
 
+# Webots ROS 2
+src/webots_ros2
+src/webots_ros2_driver
+
 # micro-ROS
 src/micro_ros_setup
 src/uros

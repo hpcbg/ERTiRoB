@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<robot name="TaskBoard">
+    <webots>
+        <plugin type="board_webots_sim.task_board_driver.TaskBoardDriver" />
+    </webots>
+</robot>

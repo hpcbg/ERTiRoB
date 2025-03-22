@@ -1,0 +1,6 @@
+# Webots
+Webots.lnk
+exports/
+tmp/
+worlds/.*.wbproj
+worlds/.*.jpg

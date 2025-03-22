@@ -1,0 +1,62 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/tables/protos/Desk.proto"
+EXTERNPROTO "../protos/TaskBoard.proto"
+EXTERNPROTO "../protos/Probe.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/franka_emika/panda/protos/Panda.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation 0.16049704328160863 -0.786497485667535 -0.5963743825287158 5.62379057261594
+  position -0.5771365259490819 -0.5138595592720674 1.220488649132218
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 5 5
+  floorTileSize 1.5 1.5
+}
+Desk {
+  translation 0 0 0.01
+}
+TaskBoard {
+  translation 0.168 -0.280001 0.798
+  rotation 0.25332673744847106 -0.9673807751295029 1.8856020440124306e-06 3.0205169426083494e-05
+  controller "<extern>"
+}
+Probe {
+  translation 0.0658 -0.28379821126958404 0.8177785399023314
+  rotation 1 -8.141626530644032e-15 6.417544306054121e-15 0.07783648512636732
+}
+Solid {
+  translation 0.065 -0.284 0.8039
+  boundingObject Box {
+    size 0.02 0.02 0.02
+  }
+}
+Solid {
+  translation 0.061 -0.233 0.8082
+  name "solid(1)"
+  boundingObject Box {
+    size 0.02 0.02 0.02
+  }
+}
+Panda {
+  translation 0 0.36 0.72
+  rotation 0 0 1 -1.5707953071795862
+  controller "panda_player"
+  controllerArgs [
+    "open_door_with_probe.csv"
+  ]
+}
+Robot {
+  name "Ros2Supervisor"
+  controller "<extern>"
+  supervisor TRUE
+}

@@ -3,10 +3,16 @@ from launch_ros.actions import Node
 from launch.actions import IncludeLaunchDescription
 from launch.substitutions import PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
+from launch_xml.launch_description_sources import XMLLaunchDescriptionSource
 
 
 def generate_launch_description():
     return LaunchDescription([
+        IncludeLaunchDescription(
+            XMLLaunchDescriptionSource(
+                './launch/rosbridge_websocket_launch.xml'
+            )
+        ),
         IncludeLaunchDescription(
             PathJoinSubstitution(
                 [FindPackageShare('board_description'), 'launch', 'display.launch.py']),
@@ -29,5 +35,9 @@ def generate_launch_description():
             parameters=[{
                 'task_board_id': 'simulated'
             }]
+        ),
+        IncludeLaunchDescription(
+            PathJoinSubstitution(
+                [FindPackageShare('board_webots_sim'), 'launch', 'task_board_launch.py']),
         )
     ])

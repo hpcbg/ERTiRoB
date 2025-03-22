@@ -1,0 +1,1426 @@
+#VRML_SIM R2025a utf8
+# license: Apache License 2.0
+# license url: http://www.apache.org/licenses/LICENSE-2.0
+# This is a proto file for Webots for the TaskBoard
+# Extracted from: C:\Users\kaloy\Documents\webots\task_board_protos\urdf\task_board.urdf
+
+PROTO TaskBoard [
+  field  SFVec3f     translation     0 0 0
+  field  SFRotation  rotation        0 0 1 0
+  field  SFString    name            "TaskBoard"  # Is `Robot.name`.
+  field  SFString    controller      "void"       # Is `Robot.controller`.
+  field  MFString    controllerArgs  []           # Is `Robot.controllerArgs`.
+  field  SFString    customData      ""           # Is `Robot.customData`.
+  field  SFBool      supervisor      FALSE        # Is `Robot.supervisor`.
+  field  SFBool      synchronization TRUE         # Is `Robot.synchronization`.
+  field  SFBool      selfCollision   FALSE        # Is `Robot.selfCollision`.
+]
+{
+  Robot {
+    translation IS translation
+    rotation IS rotation
+    controller IS controller
+    controllerArgs IS controllerArgs
+    customData IS customData
+    supervisor IS supervisor
+    synchronization IS synchronization
+    selfCollision IS selfCollision
+    children [
+      Pose {
+        translation -0.001241 -0.000037 -0.039697
+        rotation 0.699434 0.008521 0.714647 3.141306
+        children [
+          Shape {
+            appearance DEF task_board_body_visual_material PBRAppearance {
+              baseColor 0.500000 0.500000 0.500000
+              roughness 1.000000
+              metalness 0
+            }
+            geometry DEF TaskBoardMain Mesh {
+              url "TaskBoardMain.stl"
+            }
+          }
+        ]
+      }
+      Solid {
+        translation 0.038443 0.043907 0.000000
+        children [
+          Pose {
+            translation 0.000005 0.000001 -0.008821
+            rotation 0.011218 -0.023644 -0.999658 0.079953
+            children [
+              Shape {
+                appearance DEF task_board_banana_plug_black_visual_material PBRAppearance {
+                  baseColor 0.100000 0.100000 0.100000
+                  roughness 1.000000
+                  metalness 0
+                }
+                geometry DEF TaskBoardBananaPlug Mesh {
+                  url "TaskBoardBananaPlug.stl"
+                }
+              }
+            ]
+          }
+          Solid {
+            translation 0.000000 0.000000 0.002500
+            name "task_board_banana_plug_black_hole"
+            boundingObject Group {
+              children [
+                Pose {
+                  translation 0.005797 -0.000001 -0.011750
+                  rotation -0.000331 -0.000331 1.000000 1.570796
+                  children [
+                    DEF UCX_TaskBoardHoleSide_001 Mesh {
+                      url "UCX_TaskBoardHoleSide_001.stl"
+                    }
+                  ]
+                }
+                Pose {
+                  translation 0.005686 0.001130 -0.011750
+                  rotation -0.000272 -0.000331 1.000000 1.767146
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.005356 0.002218 -0.011750
+                  rotation -0.000221 -0.000331 1.000000 1.963495
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.004820 0.003220 -0.011750
+                  rotation -0.000177 -0.000331 1.000000 2.159846
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.004099 0.004098 -0.011750
+                  rotation -0.000137 -0.000331 1.000000 2.356193
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.003221 0.004819 -0.011750
+                  rotation -0.000101 -0.000331 1.000000 2.552545
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.002219 0.005355 -0.011750
+                  rotation -0.000066 -0.000331 1.000000 2.748893
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.001132 0.005685 -0.011750
+                  rotation -0.000033 -0.000331 1.000000 2.945243
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.000001 0.005797 -0.011750
+                  rotation 0.000000 -0.000331 1.000000 3.141593
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.001130 0.005686 -0.011750
+                  rotation -0.000033 0.000331 -1.000000 2.945243
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.002218 0.005356 -0.011750
+                  rotation -0.000066 0.000331 -1.000000 2.748893
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.003220 0.004820 -0.011750
+                  rotation -0.000101 0.000331 -1.000000 2.552545
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.004098 0.004099 -0.011750
+                  rotation -0.000137 0.000331 -1.000000 2.356193
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.004819 0.003221 -0.011750
+                  rotation -0.000177 0.000331 -1.000000 2.159846
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.005355 0.002219 -0.011750
+                  rotation -0.000221 0.000331 -1.000000 1.963495
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.005685 0.001132 -0.011750
+                  rotation -0.000272 0.000331 -1.000000 1.767146
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.005797 0.000001 -0.011750
+                  rotation -0.000331 0.000331 -1.000000 1.570796
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.005686 -0.001130 -0.011750
+                  rotation -0.000404 0.000331 -1.000000 1.374447
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.005356 -0.002218 -0.011750
+                  rotation -0.000496 0.000331 -1.000000 1.178098
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.004820 -0.003220 -0.011750
+                  rotation -0.000620 0.000331 -1.000000 0.981747
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.004099 -0.004098 -0.011750
+                  rotation -0.000800 0.000331 -1.000000 0.785400
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.003221 -0.004819 -0.011750
+                  rotation -0.001092 0.000331 -0.999999 0.589048
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.002219 -0.005355 -0.011750
+                  rotation -0.001666 0.000331 -0.999999 0.392700
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.001132 -0.005685 -0.011750
+                  rotation -0.003364 0.000331 -0.999994 0.196351
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.000001 -0.005797 -0.011750
+                  rotation -1.000000 0.000000 0.000000 0.000663
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.001130 -0.005686 -0.011750
+                  rotation -0.003364 -0.000331 0.999994 0.196351
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.002218 -0.005356 -0.011750
+                  rotation -0.001666 -0.000331 0.999999 0.392700
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.003220 -0.004820 -0.011750
+                  rotation -0.001092 -0.000331 0.999999 0.589048
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.004098 -0.004099 -0.011750
+                  rotation -0.000800 -0.000331 1.000000 0.785400
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.004819 -0.003221 -0.011750
+                  rotation -0.000620 -0.000331 1.000000 0.981747
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.005355 -0.002219 -0.011750
+                  rotation -0.000496 -0.000331 1.000000 1.178098
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.005685 -0.001132 -0.011750
+                  rotation -0.000404 -0.000331 1.000000 1.374447
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+              ]
+            }
+            physics Physics {
+              density -1
+              mass 0.002106
+              centerOfMass [ 0.000000 0.000000 -0.011750 ]
+              inertiaMatrix [
+                1.317370e-07 1.317370e-07 7.209348e-08
+                0.000000e+00 0.000000e+00 0.000000e+00
+              ]
+            }
+          }
+        ]
+        name "task_board_banana_plug_black"
+        physics Physics {
+          density -1
+          mass 0.004505
+          centerOfMass [ 0.000000 -0.000000 -0.009129 ]
+          inertiaMatrix [
+            2.191444e-07 2.190820e-07 7.183392e-08
+            0.000000e+00 0.000000e+00 0.000000e+00
+          ]
+        }
+      }
+      Solid {
+        translation 0.038443 0.018907 0.000000
+        children [
+          Pose {
+            translation 0.000005 0.000001 -0.008821
+            rotation 0.011218 -0.023644 -0.999658 0.079953
+            children [
+              Shape {
+                appearance DEF task_board_banana_plug_red_visual_material PBRAppearance {
+                  baseColor 1.000000 0.000000 0.000000
+                  roughness 1.000000
+                  metalness 0
+                }
+                geometry USE TaskBoardBananaPlug
+              }
+            ]
+          }
+          Solid {
+            translation 0.000000 0.000000 0.002500
+            name "task_board_banana_plug_red_hole"
+            boundingObject Group {
+              children [
+                Pose {
+                  translation 0.005797 -0.000001 -0.011750
+                  rotation -0.000331 -0.000331 1.000000 1.570796
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.005686 0.001130 -0.011750
+                  rotation -0.000272 -0.000331 1.000000 1.767146
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.005356 0.002218 -0.011750
+                  rotation -0.000221 -0.000331 1.000000 1.963495
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.004820 0.003220 -0.011750
+                  rotation -0.000177 -0.000331 1.000000 2.159846
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.004099 0.004098 -0.011750
+                  rotation -0.000137 -0.000331 1.000000 2.356193
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.003221 0.004819 -0.011750
+                  rotation -0.000101 -0.000331 1.000000 2.552545
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.002219 0.005355 -0.011750
+                  rotation -0.000066 -0.000331 1.000000 2.748893
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.001132 0.005685 -0.011750
+                  rotation -0.000033 -0.000331 1.000000 2.945243
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.000001 0.005797 -0.011750
+                  rotation 0.000000 -0.000331 1.000000 3.141593
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.001130 0.005686 -0.011750
+                  rotation -0.000033 0.000331 -1.000000 2.945243
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.002218 0.005356 -0.011750
+                  rotation -0.000066 0.000331 -1.000000 2.748893
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.003220 0.004820 -0.011750
+                  rotation -0.000101 0.000331 -1.000000 2.552545
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.004098 0.004099 -0.011750
+                  rotation -0.000137 0.000331 -1.000000 2.356193
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.004819 0.003221 -0.011750
+                  rotation -0.000177 0.000331 -1.000000 2.159846
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.005355 0.002219 -0.011750
+                  rotation -0.000221 0.000331 -1.000000 1.963495
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.005685 0.001132 -0.011750
+                  rotation -0.000272 0.000331 -1.000000 1.767146
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.005797 0.000001 -0.011750
+                  rotation -0.000331 0.000331 -1.000000 1.570796
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.005686 -0.001130 -0.011750
+                  rotation -0.000404 0.000331 -1.000000 1.374447
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.005356 -0.002218 -0.011750
+                  rotation -0.000496 0.000331 -1.000000 1.178098
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.004820 -0.003220 -0.011750
+                  rotation -0.000620 0.000331 -1.000000 0.981747
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.004099 -0.004098 -0.011750
+                  rotation -0.000800 0.000331 -1.000000 0.785400
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.003221 -0.004819 -0.011750
+                  rotation -0.001092 0.000331 -0.999999 0.589048
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.002219 -0.005355 -0.011750
+                  rotation -0.001666 0.000331 -0.999999 0.392700
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.001132 -0.005685 -0.011750
+                  rotation -0.003364 0.000331 -0.999994 0.196351
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation -0.000001 -0.005797 -0.011750
+                  rotation -1.000000 0.000000 0.000000 0.000663
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.001130 -0.005686 -0.011750
+                  rotation -0.003364 -0.000331 0.999994 0.196351
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.002218 -0.005356 -0.011750
+                  rotation -0.001666 -0.000331 0.999999 0.392700
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.003220 -0.004820 -0.011750
+                  rotation -0.001092 -0.000331 0.999999 0.589048
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.004098 -0.004099 -0.011750
+                  rotation -0.000800 -0.000331 1.000000 0.785400
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.004819 -0.003221 -0.011750
+                  rotation -0.000620 -0.000331 1.000000 0.981747
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.005355 -0.002219 -0.011750
+                  rotation -0.000496 -0.000331 1.000000 1.178098
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+                Pose {
+                  translation 0.005685 -0.001132 -0.011750
+                  rotation -0.000404 -0.000331 1.000000 1.374447
+                  children [
+                    USE UCX_TaskBoardHoleSide_001
+                  ]
+                }
+              ]
+            }
+            physics Physics {
+              density -1
+              mass 0.002106
+              centerOfMass [ 0.000000 0.000000 -0.011750 ]
+              inertiaMatrix [
+                1.317370e-07 1.317370e-07 7.209348e-08
+                0.000000e+00 0.000000e+00 0.000000e+00
+              ]
+            }
+          }
+        ]
+        name "task_board_banana_plug_red"
+        physics Physics {
+          density -1
+          mass 0.004505
+          centerOfMass [ 0.000000 -0.000000 -0.009129 ]
+          inertiaMatrix [
+            2.191444e-07 2.190820e-07 7.183392e-08
+            0.000000e+00 0.000000e+00 0.000000e+00
+          ]
+        }
+      }
+      SliderJoint {
+        jointParameters JointParameters {
+          axis 0.000000 1.000000 0.000000
+        }
+        device [
+          LinearMotor {
+            name "task_board_slider_joint"
+            maxVelocity 1000.0
+            minPosition -0.017999999225139618
+            maxPosition 0.017999999225139618
+            maxForce 1000.0
+          }
+          PositionSensor {
+            name "task_board_slider_joint_sensor"
+          }
+        ]
+        endPoint Solid {
+          translation 0.060443 -0.034530 0.003365
+          children [
+            Pose {
+              translation -0.000000 0.000000 -0.000099
+              children [
+                Shape {
+                  appearance DEF task_board_slider_visual_material PBRAppearance {
+                    baseColor 0.500000 0.500000 0.500000
+                    roughness 1.000000
+                    metalness 0
+                  }
+                  geometry DEF TaskBoardSlider Mesh {
+                    url "TaskBoardSlider.stl"
+                  }
+                }
+              ]
+            }
+          ]
+          name "task_board_slider"
+          boundingObject Pose {
+            translation -0.000000 0.000000 -0.000099
+            children [
+              DEF UCX_TaskBoardSlider_001 Mesh {
+                url "UCX_TaskBoardSlider_001.stl"
+              }
+            ]
+          }
+          physics Physics {
+            density -1
+            mass 0.000810
+            centerOfMass [ -0.000000 0.000000 -0.000099 ]
+            inertiaMatrix [
+              7.363766e-09 5.631264e-09 5.107500e-09
+              0.000000e+00 0.000000e+00 0.000000e+00
+            ]
+          }
+        }
+      }
+      Solid {
+        translation 0.088949 0.093439 0.001640
+        children [
+          Pose {
+            translation -0.017044 -0.009294 0.004228
+            rotation 0.495602 -0.800497 0.337020 1.940479
+            children [
+              Shape {
+                appearance DEF task_board_cable_wrap_post_left_visual_material PBRAppearance {
+                  baseColor 0.100000 0.100000 0.100000
+                  roughness 1.000000
+                  metalness 0
+                }
+                geometry DEF TaskBoardCableWrapPostLeft Mesh {
+                  url "TaskBoardCableWrapPostLeft.stl"
+                }
+              }
+            ]
+          }
+        ]
+        name "task_board_cable_wrap_post_left"
+        boundingObject Group {
+          children [
+            Pose {
+              translation -0.008450 0.001434 -0.002047
+              rotation -0.663579 0.663579 -0.345437 3.806801
+              children [
+                DEF UCX_TaskBoardCableWrapPostLeft_001 Mesh {
+                  url "UCX_TaskBoardCableWrapPostLeft_001.stl"
+                }
+              ]
+            }
+            Pose {
+              translation -0.021347 -0.003557 0.005080
+              rotation -0.690341 0.217557 -0.689999 2.712960
+              children [
+                DEF UCX_TaskBoardCableWrapPostLeft_002 Mesh {
+                  url "UCX_TaskBoardCableWrapPostLeft_002.stl"
+                }
+              ]
+            }
+            Pose {
+              translation -0.003471 -0.003901 -0.002731
+              rotation 0.668768 0.343292 0.659469 2.471572
+              children [
+                DEF UCX_TaskBoardCableWrapPostLeft_003 Mesh {
+                  url "UCX_TaskBoardCableWrapPostLeft_003.stl"
+                }
+              ]
+            }
+            Pose {
+              translation -0.003471 0.003901 0.002732
+              rotation 0.658368 0.347552 0.667652 2.481246
+              children [
+                DEF UCX_TaskBoardCableWrapPostLeft_004 Mesh {
+                  url "UCX_TaskBoardCableWrapPostLeft_004.stl"
+                }
+              ]
+            }
+            Pose {
+              translation -0.005535 -0.002690 0.003842
+              rotation -0.663579 0.663579 -0.345436 3.806800
+              children [
+                DEF UCX_TaskBoardCableWrapPostLeft_005 Mesh {
+                  url "UCX_TaskBoardCableWrapPostLeft_005.stl"
+                }
+              ]
+            }
+            Pose {
+              translation -0.005455 -0.005964 0.008518
+              rotation 1.000000 0.000598 -0.000311 2.181664
+              children [
+                DEF UCX_TaskBoardCableWrapPostLeft_006 Mesh {
+                  url "UCX_TaskBoardCableWrapPostLeft_006.stl"
+                }
+              ]
+            }
+            Pose {
+              translation -0.017091 -0.023980 0.001485
+              rotation 0.705840 0.056730 0.706096 3.170309
+              children [
+                DEF UCX_TaskBoardCableWrapPostLeft_007 Mesh {
+                  url "UCX_TaskBoardCableWrapPostLeft_007.stl"
+                }
+              ]
+            }
+            Pose {
+              translation 0.002573 0.000694 0.012904
+              rotation 0.451442 0.709510 0.541106 1.928416
+              children [
+                DEF UCX_TaskBoardCableWrapPostLeft_008 Mesh {
+                  url "UCX_TaskBoardCableWrapPostLeft_008.stl"
+                }
+              ]
+            }
+            Pose {
+              translation 0.002590 -0.012367 0.003755
+              rotation -0.734184 0.029020 -0.678330 3.193156
+              children [
+                DEF UCX_TaskBoardCableWrapPostLeft_009 Mesh {
+                  url "UCX_TaskBoardCableWrapPostLeft_009.stl"
+                }
+              ]
+            }
+            Pose {
+              translation -0.005659 -0.007769 -0.004835
+              rotation 0.828203 0.179556 -0.530885 0.728576
+              children [
+                DEF UCX_TaskBoardCableWrapPostLeft_010 Mesh {
+                  url "UCX_TaskBoardCableWrapPostLeft_010.stl"
+                }
+              ]
+            }
+            Pose {
+              translation -0.005659 0.007201 0.005646
+              rotation 0.828204 -0.179611 0.530865 0.728579
+              children [
+                DEF UCX_TaskBoardCableWrapPostLeft_011 Mesh {
+                  url "UCX_TaskBoardCableWrapPostLeft_011.stl"
+                }
+              ]
+            }
+          ]
+        }
+        physics Physics {
+          density -1
+          mass 0.043696
+          centerOfMass [ -0.016960 -0.008828 0.004355 ]
+          inertiaMatrix [
+            5.751847e-06 7.968065e-06 8.180556e-06
+            -4.138415e-08 -1.705128e-07 1.991660e-06
+          ]
+        }
+      }
+      SliderJoint {
+        jointParameters JointParameters {
+          axis 0.000000 0.000000 1.000000
+        }
+        device [
+          LinearMotor {
+            name "task_board_button_blue_joint"
+            maxVelocity 1000.0
+            minPosition -0.003000000026077032
+            maxForce 1000.0
+          }
+          PositionSensor {
+            name "task_board_button_blue_joint_sensor"
+          }
+        ]
+        endPoint Solid {
+          translation 0.096243 0.043907 0.002023
+          children [
+            Shape {
+              appearance DEF task_board_button_blue_visual_material PBRAppearance {
+                baseColor 0.000000 0.000000 1.000000
+                roughness 1.000000
+                metalness 0
+              }
+              geometry Cylinder {
+                radius 0.00570000009611249
+                height 0.0031999999191612005
+              }
+            }
+          ]
+          name "task_board_button_blue"
+          boundingObject Cylinder {
+            radius 0.00570000009611249
+            height 0.0031999999191612005
+          }
+          physics Physics {
+            density -1
+            mass 0.000653
+            centerOfMass [ 0.000000 0.000000 0.000000 ]
+            inertiaMatrix [
+              5.863465e-09 1.061205e-08 5.863465e-09
+              2.075673e-16 -9.860685e-24 -2.075673e-16
+            ]
+          }
+        }
+      }
+      Solid {
+        translation -0.101844 -0.043016 0.019000
+        children [
+          DistanceSensor {
+            translation 0.000000 0.010000 0.002000
+            rotation 0.000000 1.000000 0.000000 1.570796
+            type "sonar"
+            name "holder_distance_sensor"
+          }
+          Pose {
+            translation 0.000016 -0.005466 -0.004298
+            rotation 0.999986 -0.004209 0.003173 1.374831
+            children [
+              Shape {
+                appearance DEF task_board_banana_pug_port_visual_material PBRAppearance {
+                  baseColor 0.100000 0.100000 0.100000
+                  roughness 1.000000
+                  metalness 0
+                }
+                geometry DEF TaskBoardBananaPlugPort Mesh {
+                  url "TaskBoardBananaPlugPort.stl"
+                }
+              }
+            ]
+          }
+          Solid {
+            translation 0.000000 0.012735 0.000000
+            rotation -1.000000 0.000000 0.000000 1.570796
+            name "task_board_banana_pug_hole"
+            boundingObject Group {
+              children []
+            }
+            physics Physics {
+              density -1
+              mass 0.002106
+              centerOfMass [ 0.000000 0.000000 -0.011750 ]
+              inertiaMatrix [
+                1.317370e-07 1.317370e-07 7.209348e-08
+                0.000000e+00 0.000000e+00 0.000000e+00
+              ]
+            }
+          }
+        ]
+        name "task_board_banana_pug_port"
+        boundingObject Group {
+          children []
+        }
+        physics Physics {
+          density -1
+          mass 0.068757
+          centerOfMass [ 0.000002 -0.006557 -0.004786 ]
+          inertiaMatrix [
+            1.592087e-05 6.498873e-06 1.350436e-05
+            -3.803307e-09 -1.030067e-09 -1.447275e-06
+          ]
+        }
+      }
+      Solid {
+        translation 0.096243 -0.023080 0.006850
+        children [
+          Pose {
+            translation -0.000016 0.000139 0.000316
+            rotation 0.568185 -0.576245 0.587458 2.073969
+            children [
+              Shape {
+                appearance DEF task_board_m5_stick_c_visual_material PBRAppearance {
+                  baseColor 0.973000 0.529000 0.040000
+                  roughness 1.000000
+                  metalness 0
+                }
+                geometry DEF TaskBoardM5StickC Mesh {
+                  url "TaskBoardM5StickC.stl"
+                }
+              }
+            ]
+          }
+        ]
+        name "task_board_m5_stick_c"
+        boundingObject Pose {
+          translation 0.000000 -0.000000 0.000000
+          rotation 0.577350 -0.577350 0.577350 2.094395
+          children [
+            DEF UCX_TaskBoardM5StickC_001 Mesh {
+              url "UCX_TaskBoardM5StickC_001.stl"
+            }
+          ]
+        }
+        physics Physics {
+          density -1
+          mass 0.041813
+          centerOfMass [ -0.000011 0.000029 0.000173 ]
+          inertiaMatrix [
+            2.444411e-06 9.508863e-06 8.189553e-06
+            -8.578087e-10 -1.049401e-07 6.969187e-09
+          ]
+        }
+      }
+      Solid {
+        translation -0.074328 0.093439 0.001640
+        children [
+          Pose {
+            translation 0.017044 -0.009294 0.004228
+            rotation -0.687539 0.425668 -0.588300 3.705116
+            children [
+              Shape {
+                appearance DEF task_board_cable_wrap_post_right_visual_material PBRAppearance {
+                  baseColor 0.100000 0.100000 0.100000
+                  roughness 1.000000
+                  metalness 0
+                }
+                geometry DEF TaskBoardCableWrapPostRight Mesh {
+                  url "TaskBoardCableWrapPostRight.stl"
+                }
+              }
+            ]
+          }
+        ]
+        name "task_board_cable_wrap_post_right"
+        boundingObject Group {
+          children [
+            Pose {
+              translation 0.008450 0.001434 -0.002047
+              rotation -0.663579 0.663579 -0.345437 3.806801
+              children [
+                DEF UCX_TaskBoardCableWrapPostRight_001 Mesh {
+                  url "UCX_TaskBoardCableWrapPostRight_001.stl"
+                }
+              ]
+            }
+            Pose {
+              translation 0.021347 -0.003557 0.005080
+              rotation -0.689984 0.217654 -0.690325 2.713163
+              children [
+                DEF UCX_TaskBoardCableWrapPostRight_002 Mesh {
+                  url "UCX_TaskBoardCableWrapPostRight_002.stl"
+                }
+              ]
+            }
+            Pose {
+              translation 0.003471 -0.003901 -0.002731
+              rotation 0.658368 0.347552 0.667652 2.481246
+              children [
+                DEF UCX_TaskBoardCableWrapPostRight_003 Mesh {
+                  url "UCX_TaskBoardCableWrapPostRight_003.stl"
+                }
+              ]
+            }
+            Pose {
+              translation 0.003471 0.003901 0.002732
+              rotation 0.668768 0.343292 0.659469 2.471572
+              children [
+                DEF UCX_TaskBoardCableWrapPostRight_004 Mesh {
+                  url "UCX_TaskBoardCableWrapPostRight_004.stl"
+                }
+              ]
+            }
+            Pose {
+              translation 0.005535 -0.002690 0.003842
+              rotation -0.663579 0.663579 -0.345436 3.806800
+              children [
+                DEF UCX_TaskBoardCableWrapPostRight_005 Mesh {
+                  url "UCX_TaskBoardCableWrapPostRight_005.stl"
+                }
+              ]
+            }
+            Pose {
+              translation 0.005455 -0.005964 0.008518
+              rotation 1.000000 -0.000598 0.000311 2.181664
+              children [
+                DEF UCX_TaskBoardCableWrapPostRight_006 Mesh {
+                  url "UCX_TaskBoardCableWrapPostRight_006.stl"
+                }
+              ]
+            }
+            Pose {
+              translation 0.017091 -0.023980 0.001485
+              rotation 0.707162 -0.014381 0.706905 3.028083
+              children [
+                DEF UCX_TaskBoardCableWrapPostRight_007 Mesh {
+                  url "UCX_TaskBoardCableWrapPostRight_007.stl"
+                }
+              ]
+            }
+            Pose {
+              translation -0.002573 0.000694 0.012904
+              rotation 0.547151 0.701604 0.456485 1.896928
+              children [
+                DEF UCX_TaskBoardCableWrapPostRight_008 Mesh {
+                  url "UCX_TaskBoardCableWrapPostRight_008.stl"
+                }
+              ]
+            }
+            Pose {
+              translation -0.002590 -0.012367 0.003755
+              rotation -0.678390 -0.025790 -0.734249 3.083563
+              children [
+                DEF UCX_TaskBoardCableWrapPostRight_009 Mesh {
+                  url "UCX_TaskBoardCableWrapPostRight_009.stl"
+                }
+              ]
+            }
+            Pose {
+              translation 0.005659 -0.007769 -0.004835
+              rotation 0.828204 -0.179556 0.530885 0.728576
+              children [
+                DEF UCX_TaskBoardCableWrapPostRight_010 Mesh {
+                  url "UCX_TaskBoardCableWrapPostRight_010.stl"
+                }
+              ]
+            }
+            Pose {
+              translation 0.005659 0.007201 0.005646
+              rotation 0.828204 0.179611 -0.530865 0.728578
+              children [
+                DEF UCX_TaskBoardCableWrapPostRight_011 Mesh {
+                  url "UCX_TaskBoardCableWrapPostRight_011.stl"
+                }
+              ]
+            }
+          ]
+        }
+        physics Physics {
+          density -1
+          mass 0.043696
+          centerOfMass [ 0.016960 -0.008828 0.004355 ]
+          inertiaMatrix [
+            5.751847e-06 7.968065e-06 8.180557e-06
+            -4.138415e-08 1.705128e-07 -1.991660e-06
+          ]
+        }
+      }
+      HingeJoint {
+        jointParameters HingeJointParameters {
+          anchor -0.047284 -0.032333 -0.000802
+          staticFriction 0.05
+        }
+        device [
+          PositionSensor {
+            name "task_board_lid_joint_sensor"
+          }
+        ]
+        endPoint Solid {
+          translation -0.047284 -0.032333 -0.000802
+          children [
+            Pose {
+              translation -0.000122 0.032773 0.006494
+              rotation 0.596327 -0.596600 0.537088 2.155391
+              children [
+                Shape {
+                  appearance DEF task_board_lid_visual_material PBRAppearance {
+                    baseColor 0.973000 0.529000 0.040000
+                    roughness 1.000000
+                    metalness 0
+                  }
+                  geometry DEF TaskBoardLid Mesh {
+                    url "TaskBoardLid.stl"
+                  }
+                }
+              ]
+            }
+            Solid {
+              translation 0.000000 0.065398 0.012198
+              children [
+                Pose {
+                  translation -0.000002 -0.000079 0.001144
+                  rotation 0.075918 0.028503 -0.996707 0.669781
+                  children [
+                    Shape {
+                      appearance DEF task_board_lid_knob_visual_material PBRAppearance {
+                        baseColor 0.500000 0.500000 0.500000
+                        roughness 1.000000
+                        metalness 0
+                      }
+                      geometry DEF TaskBoardLidKnob Mesh {
+                        url "TaskBoardLidKnob.stl"
+                      }
+                    }
+                  ]
+                }
+              ]
+              name "task_board_lid_knob"
+              boundingObject Group {
+                children [
+                  Pose {
+                    translation 0.000000 0.000000 -0.002550
+                    children [
+                      Cylinder {
+                        radius 0.004000000189989805
+                        height 0.01586800068616867
+                      }
+                    ]
+                  }
+                  Pose {
+                    translation 0.000000 0.000000 0.004764
+                    children [
+                      Cylinder {
+                        radius 0.007486000191420317
+                        height 0.0027000000700354576
+                      }
+                    ]
+                  }
+                ]
+              }
+              physics Physics {
+                density -1
+                mass 0.0001
+                centerOfMass [ -0.000003 -0.000007 0.000627 ]
+                inertiaMatrix [
+                  8.164399e-08 8.163024e-08 4.316804e-08
+                  -2.121366e-13 -1.725459e-11 -4.730428e-10
+                ]
+              }
+            }
+          ]
+          name "task_board_lid"
+          boundingObject Pose {
+            translation -0.000000 0.045503 0.008875
+            rotation -0.707067 0.010652 -0.707067 3.120289
+            children [
+              Box {
+                size 0.0035 0.083 0.083
+              }
+            ]
+          }
+          physics Physics {
+            density -1
+            mass 0.001
+            centerOfMass [ 0.000003 0.037636 0.007401 ]
+            inertiaMatrix [
+              6.129347e-05 1.270585e-04 6.729799e-05
+              1.136501e-10 5.165367e-07 5.169168e-09
+            ]
+          }
+        }
+      }
+      SliderJoint {
+        jointParameters JointParameters {
+          axis 0.000000 0.000000 1.000000
+        }
+        device [
+          LinearMotor {
+            name "task_board_button_red_joint"
+            maxVelocity 1000.0
+            minPosition -0.003000000026077032
+            maxForce 1000.0
+          }
+          PositionSensor {
+            name "task_board_button_red_joint_sensor"
+          }
+        ]
+        endPoint Solid {
+          translation 0.096243 0.030907 0.002023
+          children [
+            Shape {
+              appearance DEF task_board_button_red_visual_material PBRAppearance {
+                baseColor 1.000000 0.000000 0.000000
+                roughness 1.000000
+                metalness 0
+              }
+              geometry Cylinder {
+                radius 0.00570000009611249
+                height 0.0031999999191612005
+              }
+            }
+          ]
+          name "task_board_button_red"
+          boundingObject Cylinder {
+            radius 0.00570000009611249
+            height 0.0031999999191612005
+          }
+          physics Physics {
+            density -1
+            mass 0.000653
+            centerOfMass [ 0.000000 0.000000 0.000000 ]
+            inertiaMatrix [
+              5.863465e-09 1.061205e-08 5.863465e-09
+              2.075673e-16 -9.860685e-24 -2.075673e-16
+            ]
+          }
+        }
+      }
+    ]
+    name IS name
+    boundingObject Group {
+      children [
+        Pose {
+          translation -0.000692 0.000563 -0.078178
+          rotation 0.707107 0.000000 0.707107 3.141593
+          children [
+            DEF UCX_TaskBoardMain_001 Mesh {
+              url "UCX_TaskBoardMain_001.stl"
+            }
+          ]
+        }
+        Pose {
+          translation -0.000740 -0.072777 -0.040174
+          rotation 0.572200 0.587535 0.572180 2.079154
+          children [
+            DEF UCX_TaskBoardMain_002 Mesh {
+              url "UCX_TaskBoardMain_002.stl"
+            }
+          ]
+        }
+        Pose {
+          translation -0.000705 0.073901 -0.040175
+          rotation 0.582378 0.567161 0.582377 2.109760
+          children [
+            DEF UCX_TaskBoardMain_003 Mesh {
+              url "UCX_TaskBoardMain_003.stl"
+            }
+          ]
+        }
+        Pose {
+          translation -0.127237 0.000563 -0.040238
+          rotation 0.999787 0.014598 -0.014598 1.571010
+          children [
+            DEF UCX_TaskBoardMain_004 Mesh {
+              url "UCX_TaskBoardMain_004.stl"
+            }
+          ]
+        }
+        Pose {
+          translation 0.125836 0.000557 -0.040238
+          rotation 0.999787 -0.014598 0.014598 1.571010
+          children [
+            DEF UCX_TaskBoardMain_005 Mesh {
+              url "UCX_TaskBoardMain_005.stl"
+            }
+          ]
+        }
+        Pose {
+          translation 0.095081 0.000563 -0.001651
+          rotation 0.577353 -0.577345 0.577353 2.094403
+          children [
+            DEF UCX_TaskBoardMain_006 Mesh {
+              url "UCX_TaskBoardMain_006.stl"
+            }
+          ]
+        }
+        Pose {
+          translation -0.107209 0.000563 -0.001651
+          rotation 0.577349 -0.577352 0.577349 2.094393
+          children [
+            DEF UCX_TaskBoardMain_007 Mesh {
+              url "UCX_TaskBoardMain_007.stl"
+            }
+          ]
+        }
+        Pose {
+          translation -0.086284 0.025334 -0.001651
+          rotation 1.000000 0.000000 0.000000 1.570796
+          children [
+            DEF UCX_TaskBoardMain_008 Mesh {
+              url "UCX_TaskBoardMain_008.stl"
+            }
+          ]
+        }
+        Pose {
+          translation -0.048284 -0.056859 -0.001651
+          rotation 0.707107 0.000000 0.707107 3.141593
+          children [
+            DEF UCX_TaskBoardMain_009 Mesh {
+              url "UCX_TaskBoardMain_009.stl"
+            }
+          ]
+        }
+        Pose {
+          translation 0.023580 -0.061734 -0.001651
+          rotation 0.707107 0.000000 0.707107 3.141593
+          children [
+            DEF UCX_TaskBoardMain_010 Mesh {
+              url "UCX_TaskBoardMain_010.stl"
+            }
+          ]
+        }
+        Pose {
+          translation 0.060443 -0.066208 -0.001651
+          rotation 0.577350 -0.577350 0.577350 2.094395
+          children [
+            DEF UCX_TaskBoardMain_011 Mesh {
+              url "UCX_TaskBoardMain_011.stl"
+            }
+          ]
+        }
+        Pose {
+          translation 0.034580 -0.032333 -0.001651
+          rotation 0.707107 0.000000 0.707107 3.141593
+          children [
+            DEF UCX_TaskBoardMain_012 Mesh {
+              url "UCX_TaskBoardMain_012.stl"
+            }
+          ]
+        }
+        Pose {
+          translation 0.023579 -0.002088 -0.001651
+          rotation 0.707107 0.000000 0.707107 3.141593
+          children [
+            DEF UCX_TaskBoardMain_013 Mesh {
+              url "UCX_TaskBoardMain_013.stl"
+            }
+          ]
+        }
+        Pose {
+          translation 0.060443 0.031991 -0.001651
+          rotation 0.577350 -0.577350 0.577350 2.094395
+          children [
+            DEF UCX_TaskBoardMain_014 Mesh {
+              url "UCX_TaskBoardMain_014.stl"
+            }
+          ]
+        }
+        Pose {
+          translation 0.023579 0.063460 -0.001651
+          rotation 0.707107 0.000000 0.707107 3.141593
+          children [
+            DEF UCX_TaskBoardMain_015 Mesh {
+              url "UCX_TaskBoardMain_015.stl"
+            }
+          ]
+        }
+        Pose {
+          translation 0.023579 0.031407 -0.001651
+          rotation 0.707107 0.000000 0.707107 3.141593
+          children [
+            DEF UCX_TaskBoardMain_016 Mesh {
+              url "UCX_TaskBoardMain_016.stl"
+            }
+          ]
+        }
+        Pose {
+          translation 0.050563 0.043907 -0.001651
+          rotation 0.577350 -0.577350 0.577350 2.094395
+          children [
+            DEF UCX_TaskBoardMain_017 Mesh {
+              url "UCX_TaskBoardMain_017.stl"
+            }
+          ]
+        }
+        Pose {
+          translation 0.050563 0.018907 -0.001651
+          rotation 0.577350 -0.577350 0.577350 2.094395
+          children [
+            DEF UCX_TaskBoardMain_018 Mesh {
+              url "UCX_TaskBoardMain_018.stl"
+            }
+          ]
+        }
+        Pose {
+          translation 0.011459 0.018907 -0.001651
+          rotation 0.707107 0.000000 0.707107 3.141593
+          children [
+            DEF UCX_TaskBoardMain_019 Mesh {
+              url "UCX_TaskBoardMain_019.stl"
+            }
+          ]
+        }
+        Pose {
+          translation 0.011459 0.043907 -0.001651
+          rotation 0.707107 0.000000 0.707107 3.141593
+          children [
+            DEF UCX_TaskBoardMain_020 Mesh {
+              url "UCX_TaskBoardMain_020.stl"
+            }
+          ]
+        }
+        Pose {
+          translation -0.047284 0.062840 -0.001651
+          rotation 0.707107 0.000000 0.707107 3.141593
+          children [
+            DEF UCX_TaskBoardMain_021 Mesh {
+              url "UCX_TaskBoardMain_021.stl"
+            }
+          ]
+        }
+        Pose {
+          translation 0.008516 -0.032333 -0.010402
+          children [
+            DEF UCX_TaskBoardMain_022 Mesh {
+              url "UCX_TaskBoardMain_022.stl"
+            }
+          ]
+        }
+        Pose {
+          translation 0.000116 -0.032033 -0.001902
+          children [
+            DEF UCX_TaskBoardMain_023 Mesh {
+              url "UCX_TaskBoardMain_023.stl"
+            }
+          ]
+        }
+        Pose {
+          translation -0.010884 -0.032033 -0.001902
+          rotation 0.577350 0.577350 0.577350 2.094395
+          children [
+            DEF UCX_TaskBoardMain_024 Mesh {
+              url "UCX_TaskBoardMain_024.stl"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
